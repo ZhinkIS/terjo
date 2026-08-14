@@ -1,0 +1,9 @@
+node_modules
+vendor
+.env
+storage/*.key
+.git
+public/hot
+public/storage
+public/fonts-manifest.dev.json
+bootstrap/ssr
