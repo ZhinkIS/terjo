@@ -17,6 +17,8 @@ $app = Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->trustProxies(at: '*');
+
         $middleware->web(append: [
             EnsureApprovedUser::class,
             HandleInertiaRequests::class,
