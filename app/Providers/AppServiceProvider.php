@@ -27,7 +27,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        URL::forceScheme('https');
+        $request = $this->app->make(Request::class);
+
+        if (app()->environment('production') || $request->isSecure()) {
+            config(['session.secure' => true]);
+
+            URL::forceScheme('https');
+        }
 
         $this->configureDefaults();
         $this->configureRateLimiting();

@@ -9,7 +9,7 @@ import memberRoutes from '@/routes/members';
 import type { User } from '@/types';
 
 const menuItemClassName =
-    'flex items-center justify-between gap-2 rounded-md px-3 py-2 text-sm text-[#1b1b18] transition hover:bg-black/5 hover:text-[#C9A227] active:scale-[0.98] dark:text-[#EDEDEC] dark:hover:bg-white/10';
+    'flex w-full items-center justify-between gap-2 rounded-md px-4 py-2.5 text-sm text-[#1b1b18] transition-colors hover:bg-black/5 hover:text-[#C9A227] dark:text-[#EDEDEC] dark:hover:bg-white/10';
 
 function initials(name: string): string {
     return name
@@ -28,6 +28,8 @@ export default function AccountMenu({
     overlay?: boolean;
 }) {
     const { t, language, setLanguage } = useLanguage();
+
+    const isPending = user.status === 'pending';
 
     const [open, setOpen] = useState(false);
 
@@ -102,27 +104,33 @@ export default function AccountMenu({
                     role="menu"
                     className="absolute right-0 z-20 mt-2 w-56 rounded-xl border border-black/10 bg-white p-2 shadow-lg dark:border-white/10 dark:bg-[#161615]"
                 >
-                    <div className="flex flex-col gap-1">
-                        <Link
-                            href={dashboard.url()}
-                            onClick={() => setOpen(false)}
-                            role="menuitem"
-                            className="rounded-lg bg-neutral-800 px-4 py-3 text-sm font-semibold text-[#C9A227] transition hover:bg-neutral-700 active:scale-[0.98] dark:bg-neutral-800 dark:hover:bg-neutral-700"
-                        >
-                            {t('nav.dashboard')}
-                        </Link>
+                    {isPending ? null : (
+                        <>
+                            <div className="flex flex-col gap-1">
+                                <Link
+                                    href={dashboard.url()}
+                                    onClick={() => setOpen(false)}
+                                    role="menuitem"
+                                    className={menuItemClassName}
+                                >
+                                    {t('nav.dashboard')}
+                                </Link>
 
-                        <Link
-                            href={memberRoutes.show.url({ user: user.id })}
-                            onClick={() => setOpen(false)}
-                            role="menuitem"
-                            className={menuItemClassName}
-                        >
-                            {t('nav.profile')}
-                        </Link>
-                    </div>
+                                <Link
+                                    href={memberRoutes.show.url({
+                                        user: user.id,
+                                    })}
+                                    onClick={() => setOpen(false)}
+                                    role="menuitem"
+                                    className={menuItemClassName}
+                                >
+                                    {t('nav.profile')}
+                                </Link>
+                            </div>
 
-                    <div className="my-2 border-t border-black/10 dark:border-white/10" />
+                            <div className="my-2 border-t border-black/10 dark:border-white/10" />
+                        </>
+                    )}
 
                     <div className="flex flex-col gap-1">
                         <p className="px-3 pt-1 pb-0.5 text-xs font-medium text-[#706f6c] dark:text-[#A1A09A]">
@@ -173,7 +181,7 @@ export default function AccountMenu({
                         role="menuitem"
                         className={cn(
                             menuItemClassName,
-                            'text-red-600 dark:text-red-400',
+                            'cursor-pointer text-red-600 hover:text-red-500 dark:text-red-400 dark:hover:bg-zinc-800/60 dark:hover:text-red-300',
                         )}
                     >
                         {t('nav.signOut')}

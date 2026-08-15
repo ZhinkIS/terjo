@@ -40,15 +40,15 @@ test('the admin slideshow routes require the admin role', function () {
     $admin = User::factory()->asAdmin()->create();
 
     $this->actingAs($member)
-        ->get(route('admin.slideshows.index'))
+        ->post(route('admin.slideshows.store'), [])
         ->assertForbidden();
 
     $this->actingAs($admin)
-        ->get(route('admin.slideshows.index'))
-        ->assertOk();
+        ->post(route('admin.slideshows.store'), [])
+        ->assertSessionHasErrors('image');
 });
 
 test('guests are redirected to login when visiting admin routes', function () {
-    $this->get(route('admin.slideshows.index'))
+    $this->post(route('admin.slideshows.store'))
         ->assertRedirect(route('login'));
 });

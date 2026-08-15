@@ -28,6 +28,32 @@ test('a guest is redirected to login when visiting the pending page', function (
     $this->get(route('pending'))->assertRedirect(route('login'));
 });
 
+test('an approved user visiting the pending page is redirected home', function () {
+    $approved = User::factory()->asMember()->create();
+
+    $this->actingAs($approved)
+        ->get(route('pending'))
+        ->assertRedirect(route('home'));
+});
+
+test('the pending status endpoint reports pending for a pending user', function () {
+    $pending = User::factory()->asMember()->asPending()->create();
+
+    $this->actingAs($pending)
+        ->get(route('pending.status'))
+        ->assertOk()
+        ->assertJson(['status' => 'pending']);
+});
+
+test('the pending status endpoint reports approved for an approved user', function () {
+    $approved = User::factory()->asMember()->create();
+
+    $this->actingAs($approved)
+        ->get(route('pending.status'))
+        ->assertOk()
+        ->assertJson(['status' => 'approved']);
+});
+
 test('pending users are hidden from the member directory', function () {
     $viewer = User::factory()->asMember()->create(['name' => 'Zee Viewer']);
     $approved = User::factory()->asMember()->create(['name' => 'Aam Approved']);

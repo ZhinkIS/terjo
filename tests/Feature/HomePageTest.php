@@ -5,17 +5,16 @@ use App\Models\Slideshow;
 use App\Models\User;
 use Inertia\Testing\AssertableInertia as Assert;
 
-test('guests see the hero slideshow but not the member directory', function () {
+test('guests get no slideshow or directory props', function () {
     Slideshow::factory()->create(['is_active' => false]);
-    $active = Slideshow::factory()->create(['is_active' => true]);
+    Slideshow::factory()->create(['is_active' => true]);
     User::factory()->asMember()->create();
 
     $this->get(route('home'))
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
             ->component('welcome')
-            ->has('slideshows', 1)
-            ->where('slideshows.0.id', $active->id)
+            ->missing('slideshows')
             ->missing('members'));
 });
 
@@ -59,11 +58,13 @@ test('approved members see the hero slideshow and the member directory', functio
 });
 
 test('the hero slideshow respects the configured position order', function () {
+    $member = User::factory()->asMember()->create();
     $middle = Slideshow::factory()->create(['position' => 1]);
     $first = Slideshow::factory()->create(['position' => 0]);
     $last = Slideshow::factory()->create(['position' => 2]);
 
-    $this->get(route('home'))
+    $this->actingAs($member)
+        ->get(route('home'))
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
             ->component('welcome')

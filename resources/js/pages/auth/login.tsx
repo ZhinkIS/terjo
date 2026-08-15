@@ -2,7 +2,6 @@ import { Head, Link, useForm } from '@inertiajs/react';
 
 import type { FormEvent } from 'react';
 
-import AccountDropdown from '@/components/account-dropdown';
 import Navbar from '@/components/navbar';
 import { useLanguage } from '@/i18n/language-provider';
 import { home, register } from '@/routes';
@@ -31,9 +30,7 @@ export default function Login() {
             <Head title={t('auth.loginSubmit')} />
 
             <div className="flex min-h-screen flex-col bg-[#FDFDFC] text-[#1b1b18] dark:bg-[#0a0a0a] dark:text-[#EDEDEC]">
-                <Navbar>
-                    <AccountDropdown />
-                </Navbar>
+                <Navbar />
 
                 <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col px-6 pt-6 pb-8">
                     <Link

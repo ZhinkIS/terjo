@@ -16,6 +16,9 @@ function initials(name: string): string {
         .toUpperCase();
 }
 
+const menuItemClassName =
+    'flex w-full items-center justify-between gap-2 rounded-md px-4 py-2.5 text-sm text-[#1b1b18] transition-colors hover:bg-black/5 hover:text-[#C9A227] dark:text-[#EDEDEC] dark:hover:bg-white/10';
+
 type MobileMenuProps = {
     open: boolean;
     onClose: () => void;
@@ -63,7 +66,7 @@ export default function MobileMenu({ open, onClose }: MobileMenuProps) {
 
             <div
                 className={cn(
-                    'absolute inset-x-0 top-full z-50 overflow-hidden rounded-b-2xl border-x border-b border-white/10 bg-[#111111] text-white shadow-2xl transition-all duration-200 ease-out md:hidden',
+                    'absolute inset-x-0 top-full z-50 overflow-hidden rounded-b-2xl border-x border-b border-black/10 bg-[#FDFDFC] text-[#1b1b18] shadow-2xl transition-all duration-200 ease-out md:hidden dark:border-white/10 dark:bg-[#111111] dark:text-white',
                     open
                         ? 'translate-y-0 opacity-100'
                         : 'pointer-events-none -translate-y-3 opacity-0',
@@ -77,7 +80,7 @@ export default function MobileMenu({ open, onClose }: MobileMenuProps) {
                                 type="button"
                                 onClick={onClose}
                                 aria-label={t('nav.closeMenu')}
-                                className="flex items-center gap-1 rounded-sm border border-white/15 px-3 py-1.5 text-sm font-medium text-white transition hover:border-[#C9A227] hover:text-[#C9A227] active:scale-95"
+                                className="flex items-center gap-1 rounded-sm border border-black/15 px-3 py-1.5 text-sm font-medium transition hover:border-[#C9A227] hover:text-[#C9A227] active:scale-95 dark:border-white/15 dark:text-white"
                             >
                                 <svg
                                     width={14}
@@ -97,7 +100,7 @@ export default function MobileMenu({ open, onClose }: MobileMenuProps) {
                         </header>
 
                         <div className="px-6 pt-4 pb-8">
-                            <section className="rounded-2xl border border-white/10 bg-white/5 p-5">
+                            <section className="rounded-2xl border border-black/10 bg-black/5 p-5 dark:border-white/10 dark:bg-white/5">
                                 <div className="flex items-center gap-3">
                                     {user ? (
                                         user.profile_picture_url ? (
@@ -136,7 +139,7 @@ export default function MobileMenu({ open, onClose }: MobileMenuProps) {
                                                 ? user.name
                                                 : t('nav.account')}
                                         </p>
-                                        <p className="truncate text-sm text-white/60">
+                                        <p className="truncate text-sm text-[#706f6c] dark:text-white/60">
                                             {user
                                                 ? user.email
                                                 : t(
@@ -149,30 +152,43 @@ export default function MobileMenu({ open, onClose }: MobileMenuProps) {
                                 <div className="mt-5 flex flex-col gap-2.5">
                                     {user ? (
                                         <>
-                                            <Link
-                                                href={dashboard.url()}
-                                                onClick={onClose}
-                                                className="w-full rounded-lg bg-[#C9A227] px-4 py-3 text-center text-sm font-semibold text-white transition hover:bg-[#b18f1f] active:scale-[0.98]"
-                                            >
-                                                {t('nav.dashboard')}
-                                            </Link>
+                                            {user.status !== 'pending' ? (
+                                                <>
+                                                    <Link
+                                                        href={dashboard.url()}
+                                                        onClick={onClose}
+                                                        className={
+                                                            menuItemClassName
+                                                        }
+                                                    >
+                                                        {t('nav.dashboard')}
+                                                    </Link>
 
-                                            <Link
-                                                href={memberRoutes.show.url({
-                                                    user: user.id,
-                                                })}
-                                                onClick={onClose}
-                                                className="w-full rounded-lg border border-white/15 px-4 py-3 text-center text-sm font-semibold text-white transition hover:border-[#C9A227] hover:text-[#C9A227] active:scale-[0.98]"
-                                            >
-                                                {t('nav.profile')}
-                                            </Link>
+                                                    <Link
+                                                        href={memberRoutes.show.url(
+                                                            {
+                                                                user: user.id,
+                                                            },
+                                                        )}
+                                                        onClick={onClose}
+                                                        className={
+                                                            menuItemClassName
+                                                        }
+                                                    >
+                                                        {t('nav.profile')}
+                                                    </Link>
+                                                </>
+                                            ) : null}
 
                                             <Link
                                                 href={logout.url()}
                                                 method="post"
                                                 as="button"
                                                 onClick={onClose}
-                                                className="w-full rounded-lg border border-red-400/30 px-4 py-3 text-center text-sm font-semibold text-red-400 transition hover:border-red-400 active:scale-[0.98]"
+                                                className={cn(
+                                                    menuItemClassName,
+                                                    'cursor-pointer text-red-600 hover:text-red-500 dark:text-red-400 dark:hover:bg-zinc-800/60 dark:hover:text-red-300',
+                                                )}
                                             >
                                                 {t('nav.signOut')}
                                             </Link>
@@ -190,7 +206,7 @@ export default function MobileMenu({ open, onClose }: MobileMenuProps) {
                                             <Link
                                                 href={register.url()}
                                                 onClick={onClose}
-                                                className="w-full rounded-lg border border-white/15 px-4 py-3 text-center text-sm font-semibold text-white transition hover:border-[#C9A227] hover:text-[#C9A227] active:scale-[0.98]"
+                                                className="w-full rounded-lg border border-black/15 px-4 py-3 text-center text-sm font-semibold transition hover:border-[#C9A227] hover:text-[#C9A227] active:scale-[0.98] dark:border-white/15 dark:text-white"
                                             >
                                                 {t('nav.signUp')}
                                             </Link>
@@ -199,8 +215,8 @@ export default function MobileMenu({ open, onClose }: MobileMenuProps) {
                                 </div>
                             </section>
 
-                            <section className="mt-4 rounded-2xl border border-white/10 bg-white/5 p-5">
-                                <p className="text-xs font-semibold tracking-widest text-white/50 uppercase">
+                            <section className="mt-4 rounded-2xl border border-black/10 bg-black/5 p-5 dark:border-white/10 dark:bg-white/5">
+                                <p className="text-xs font-semibold tracking-widest text-[#706f6c] uppercase dark:text-white/50">
                                     {t('nav.language')}
                                 </p>
 
@@ -220,8 +236,8 @@ export default function MobileMenu({ open, onClose }: MobileMenuProps) {
                                                 className={cn(
                                                     'flex items-center justify-between gap-3 rounded-lg px-3 py-2.5 text-sm transition active:scale-[0.98]',
                                                     active
-                                                        ? 'bg-white/10 text-white'
-                                                        : 'text-white/70 hover:bg-white/5 hover:text-white',
+                                                        ? 'bg-black/10 text-[#1b1b18] dark:bg-white/10 dark:text-white'
+                                                        : 'text-[#706f6c] hover:bg-black/5 hover:text-[#1b1b18] dark:text-white/70 dark:hover:bg-white/5 dark:hover:text-white',
                                                 )}
                                             >
                                                 <span className="flex items-center gap-3">

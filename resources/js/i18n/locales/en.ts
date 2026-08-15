@@ -81,6 +81,7 @@ export const en: Dictionary = {
     'pending.description':
         'Your account is being reviewed by the Terjocore Owner/Admin. Once approved, you will be able to access all community features.',
     'pending.status': 'Status: Pending Approval',
+    'pending.checking': 'Checking membership status...',
 
     'member.backToCommunity': 'Back to community',
     'member.joined': 'Joined {date}',
@@ -99,6 +100,7 @@ export const en: Dictionary = {
     'dashboard.tabPending': 'Pending Registrations',
     'dashboard.tabMembers': 'Manage Members',
     'dashboard.tabSettings': 'Site Settings',
+    'dashboard.tabSlideshows': 'Slideshow',
     'dashboard.saveProfile': 'Save Profile',
     'dashboard.saveChanges': 'Save Changes',
     'dashboard.editMember': 'Edit {name}',
@@ -136,23 +138,8 @@ export const en: Dictionary = {
     'slideshow.moveUp': 'Move up',
     'slideshow.moveDown': 'Move down',
     'slideshow.confirmDelete': 'Delete this slideshow?',
-    'slideshow.title': 'Slideshow',
-    'slideshow.hint': 'Manage images displayed on the homepage.',
-    'slideshow.add': 'Add Slideshow',
-    'slideshow.image': 'Image',
-    'slideshow.status': 'Status',
-    'slideshow.created': 'Created',
-    'slideshow.actions': 'Actions',
-    'slideshow.emptyList': 'No slideshows yet.',
-    'slideshow.addTitle': 'Add Slideshow',
-    'slideshow.addHint': 'Upload an image to show on the community homepage.',
-    'slideshow.preview': 'Preview',
-    'slideshow.editTitle': 'Edit Slideshow',
-    'slideshow.editHint': 'Update the image or visibility of this slideshow.',
 
     'rules.title': '📜Terjo Legalis Pactum',
     'rules.closeModal': 'Close rules modal',
     'rules.close': 'Close',
-
-    'admin.brand': 'Terjocore Admin',
 };

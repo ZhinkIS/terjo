@@ -1,8 +1,6 @@
 import { Head, Link, usePage } from '@inertiajs/react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
-import AccountDropdown from '@/components/account-dropdown';
-import AccountMenu from '@/components/account-menu';
 import Navbar from '@/components/navbar';
 import RulesModal from '@/components/rules-modal';
 import type { Dictionary } from '@/i18n';
@@ -28,8 +26,8 @@ type Member = {
 };
 
 type WelcomeProps = {
-    slideshows: Slideshow[];
-    members: Member[];
+    slideshows?: Slideshow[];
+    members?: Member[];
     heroTitle: string;
     heroSubtitle: string;
 };
@@ -56,8 +54,8 @@ function initials(name: string): string {
 }
 
 export default function Welcome({
-    slideshows,
-    members,
+    slideshows = [],
+    members = [],
     heroTitle,
     heroSubtitle,
 }: WelcomeProps) {
@@ -72,18 +70,6 @@ export default function Welcome({
 
     const [index, setIndex] = useState(0);
     const [rulesOpen, setRulesOpen] = useState(false);
-
-    useEffect(() => {
-        if (!user || slideshows.length <= 1) {
-            return;
-        }
-
-        const timer = setInterval(() => {
-            setIndex((current) => (current + 1) % slideshows.length);
-        }, 5000);
-
-        return () => clearInterval(timer);
-    }, [slideshows.length, user]);
 
     const goTo = (nextIndex: number) => {
         setIndex((nextIndex + slideshows.length) % slideshows.length);
@@ -120,13 +106,7 @@ export default function Welcome({
                         <Navbar
                             overlay
                             members={canViewDirectory ? members : undefined}
-                        >
-                            {user ? (
-                                <AccountMenu user={user} overlay />
-                            ) : (
-                                <AccountDropdown overlay />
-                            )}
-                        </Navbar>
+                        />
 
                         <div
                             className={cn(

@@ -27,17 +27,18 @@ class HomeController extends Controller
      */
     public function __invoke(Request $request): Response
     {
-        $slideshows = $this->activeSlideshows();
-
         $user = $request->user();
 
         $settings = Setting::current();
 
         $props = [
-            'slideshows' => $slideshows,
             'heroTitle' => $settings->heroTitle(),
             'heroSubtitle' => $settings->heroSubtitle(),
         ];
+
+        if ($user instanceof User) {
+            $props['slideshows'] = $this->activeSlideshows();
+        }
 
         if ($user instanceof User && $user->isApproved()) {
             $version = (int) Cache::get(User::DIRECTORY_VERSION_KEY, 0);

@@ -1,38 +1,52 @@
-import { Head, Link, usePage } from '@inertiajs/react';
+import { Head, router, usePage } from '@inertiajs/react';
 
-import ThemeToggle from '@/components/theme-toggle';
+import { useEffect } from 'react';
+
+import Navbar from '@/components/navbar';
 import { useLanguage } from '@/i18n/language-provider';
-import { home, logout } from '@/routes';
+import { home, login } from '@/routes';
+import { status as pendingStatus } from '@/routes/pending';
 
 export default function Pending() {
     const { site } = usePage().props;
     const { t } = useLanguage();
+
+    useEffect(() => {
+        const check = () => {
+            fetch(pendingStatus.url())
+                .then((response) => {
+                    if (response.redirected) {
+                        window.location.assign(login.url());
+
+                        return;
+                    }
+
+                    return response.json();
+                })
+                .then((data: { status?: string } | undefined) => {
+                    if (
+                        data?.status === 'approved' ||
+                        data?.status === 'deleted'
+                    ) {
+                        router.visit(home.url());
+                    }
+                })
+                .catch(() => undefined);
+        };
+
+        check();
+
+        const timer = setInterval(check, 4000);
+
+        return () => clearInterval(timer);
+    }, []);
 
     return (
         <>
             <Head title={`${t('pending.head')} · ${site.name}`} />
 
             <div className="flex min-h-screen flex-col bg-[#FDFDFC] text-[#1b1b18] dark:bg-[#0a0a0a] dark:text-[#EDEDEC]">
-                <header className="flex items-center justify-between border-b border-black/10 px-6 py-4 dark:border-white/10">
-                    <Link
-                        href={home.url()}
-                        className="text-xl font-semibold tracking-tight"
-                    >
-                        {site.name}
-                    </Link>
-
-                    <div className="flex items-center gap-2">
-                        <ThemeToggle />
-                        <Link
-                            href={logout.url()}
-                            method="post"
-                            as="button"
-                            className="rounded-sm border border-black/15 px-4 py-2 text-sm font-medium transition hover:border-[#C9A227] hover:text-[#C9A227] active:scale-95 dark:border-white/15"
-                        >
-                            {t('nav.signOut')}
-                        </Link>
-                    </div>
-                </header>
+                <Navbar />
 
                 <main className="flex flex-1 items-center justify-center px-6 py-16">
                     <div className="flex w-full max-w-md flex-col items-center gap-5 rounded-2xl border border-black/10 bg-white p-10 text-center shadow-sm dark:border-white/10 dark:bg-[#161615]">
@@ -73,6 +87,10 @@ export default function Pending() {
                         <span className="inline-flex rounded-full bg-[#C9A227]/15 px-3 py-1 text-xs font-medium text-[#C9A227]">
                             {t('pending.status')}
                         </span>
+
+                        <p className="text-xs text-[#706f6c] dark:text-[#A1A09A]">
+                            {t('pending.checking')}
+                        </p>
                     </div>
                 </main>
             </div>

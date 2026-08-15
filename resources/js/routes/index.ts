@@ -367,8 +367,8 @@ dashboard.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     
     dashboard.form = dashboardForm
 /**
-* @see \Inertia\Controller::__invoke
- * @see vendor/inertiajs/inertia-laravel/src/Controller.php:13
+* @see \App\Http\Controllers\PendingController::pending
+ * @see app/Http/Controllers/PendingController.php:18
  * @route '/pending'
  */
 export const pending = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -382,8 +382,8 @@ pending.definition = {
 } satisfies RouteDefinition<["get","head"]>
 
 /**
-* @see \Inertia\Controller::__invoke
- * @see vendor/inertiajs/inertia-laravel/src/Controller.php:13
+* @see \App\Http\Controllers\PendingController::pending
+ * @see app/Http/Controllers/PendingController.php:18
  * @route '/pending'
  */
 pending.url = (options?: RouteQueryOptions) => {
@@ -391,8 +391,8 @@ pending.url = (options?: RouteQueryOptions) => {
 }
 
 /**
-* @see \Inertia\Controller::__invoke
- * @see vendor/inertiajs/inertia-laravel/src/Controller.php:13
+* @see \App\Http\Controllers\PendingController::pending
+ * @see app/Http/Controllers/PendingController.php:18
  * @route '/pending'
  */
 pending.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -400,8 +400,8 @@ pending.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     method: 'get',
 })
 /**
-* @see \Inertia\Controller::__invoke
- * @see vendor/inertiajs/inertia-laravel/src/Controller.php:13
+* @see \App\Http\Controllers\PendingController::pending
+ * @see app/Http/Controllers/PendingController.php:18
  * @route '/pending'
  */
 pending.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -410,8 +410,8 @@ pending.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 })
 
     /**
-* @see \Inertia\Controller::__invoke
- * @see vendor/inertiajs/inertia-laravel/src/Controller.php:13
+* @see \App\Http\Controllers\PendingController::pending
+ * @see app/Http/Controllers/PendingController.php:18
  * @route '/pending'
  */
     const pendingForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -420,8 +420,8 @@ pending.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     })
 
             /**
-* @see \Inertia\Controller::__invoke
- * @see vendor/inertiajs/inertia-laravel/src/Controller.php:13
+* @see \App\Http\Controllers\PendingController::pending
+ * @see app/Http/Controllers/PendingController.php:18
  * @route '/pending'
  */
         pendingForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -429,8 +429,8 @@ pending.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
             method: 'get',
         })
             /**
-* @see \Inertia\Controller::__invoke
- * @see vendor/inertiajs/inertia-laravel/src/Controller.php:13
+* @see \App\Http\Controllers\PendingController::pending
+ * @see app/Http/Controllers/PendingController.php:18
  * @route '/pending'
  */
         pendingForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({

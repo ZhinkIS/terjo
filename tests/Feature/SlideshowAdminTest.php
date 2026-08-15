@@ -14,7 +14,7 @@ test('an admin can create a slideshow from an uploaded image', function () {
             'image' => UploadedFile::fake()->image('slide.jpg', 1600, 600),
             'is_active' => '1',
         ])
-        ->assertRedirect(route('admin.slideshows.index'));
+        ->assertRedirect();
 
     $slideshow = Slideshow::sole();
 
@@ -52,7 +52,7 @@ test('an admin can update a slideshow and replace its image', function () {
             'image' => UploadedFile::fake()->image('new.jpg', 1600, 600),
             'is_active' => '0',
         ])
-        ->assertRedirect(route('admin.slideshows.index'));
+        ->assertRedirect();
 
     $slideshow->refresh();
 
@@ -70,7 +70,7 @@ test('an admin can delete a slideshow and its image', function () {
 
     $this->actingAs($admin)
         ->delete(route('admin.slideshows.destroy', $slideshow))
-        ->assertRedirect(route('admin.slideshows.index'));
+        ->assertRedirect();
 
     expect(Slideshow::find($slideshow->id))->toBeNull();
 
@@ -88,7 +88,7 @@ test('a new slideshow is appended after the existing ones', function () {
             'image' => UploadedFile::fake()->image('slide.jpg', 1600, 600),
             'is_active' => '1',
         ])
-        ->assertRedirect(route('admin.slideshows.index'));
+        ->assertRedirect();
 
     $slideshow = Slideshow::latest('id')->first();
 

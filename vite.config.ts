@@ -19,7 +19,7 @@ export default defineConfig({
                 }),
             ],
         }),
-        inertia(),
+        inertia({ ssr: process.env.INERTIA_SSR === 'true' }),
         react({
             babel: {
                 plugins: ['babel-plugin-react-compiler'],

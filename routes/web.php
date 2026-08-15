@@ -10,6 +10,7 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MemberController as PublicMemberController;
+use App\Http\Controllers\PendingController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -47,18 +48,29 @@ Route::get('/dashboard', DashboardController::class)
     ->middleware('auth')
     ->name('dashboard');
 
-Route::inertia('/pending', 'pending')
+Route::get('/pending', [PendingController::class, 'index'])
     ->middleware('auth')
     ->name('pending');
+
+Route::get('/pending/status', [PendingController::class, 'status'])
+    ->middleware('auth')
+    ->name('pending.status');
 
 Route::middleware(['auth', 'role:admin'])
     ->prefix('admin')
     ->name('admin.')
     ->group(function (): void {
+        Route::post('slideshows', [SlideshowController::class, 'store'])
+            ->name('slideshows.store');
+
         Route::put('slideshows/reorder', [SlideshowController::class, 'reorder'])
             ->name('slideshows.reorder');
 
-        Route::resource('slideshows', SlideshowController::class)->except(['show']);
+        Route::put('slideshows/{slideshow}', [SlideshowController::class, 'update'])
+            ->name('slideshows.update');
+
+        Route::delete('slideshows/{slideshow}', [SlideshowController::class, 'destroy'])
+            ->name('slideshows.destroy');
 
         Route::patch('members/{user}', [MemberController::class, 'update'])
             ->name('members.update');

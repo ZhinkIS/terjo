@@ -19,7 +19,7 @@ class EnsureApprovedUser
         if ($user !== null && $user->isPending()) {
             $route = $request->route();
 
-            if ($route === null || ! in_array($route->getName(), ['pending', 'logout'], true)) {
+            if ($route === null || ! in_array($route->getName(), ['pending', 'pending.status', 'logout'], true)) {
                 return redirect()->route('pending');
             }
         }

@@ -1,8 +1,8 @@
 import { Link, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 
-import type { ReactNode } from 'react';
-
+import AccountDropdown from '@/components/account-dropdown';
+import AccountMenu from '@/components/account-menu';
 import MobileMenu from '@/components/mobile-menu';
 import SearchModal from '@/components/search-modal';
 import type { SearchableMember } from '@/components/search-modal';
@@ -14,15 +14,10 @@ import { home } from '@/routes';
 type NavbarProps = {
     members?: SearchableMember[];
     overlay?: boolean;
-    children?: ReactNode;
 };
 
-export default function Navbar({
-    members,
-    overlay = false,
-    children,
-}: NavbarProps) {
-    const { site } = usePage().props;
+export default function Navbar({ members, overlay = false }: NavbarProps) {
+    const { auth, site } = usePage().props;
     const { t } = useLanguage();
 
     const [menuOpen, setMenuOpen] = useState(false);
@@ -87,7 +82,14 @@ export default function Navbar({
                         <ThemeToggle overlay={overlay} />
 
                         <div className="hidden items-center gap-2 md:flex">
-                            {children}
+                            {auth.user ? (
+                                <AccountMenu
+                                    user={auth.user}
+                                    overlay={overlay}
+                                />
+                            ) : (
+                                <AccountDropdown overlay={overlay} />
+                            )}
                         </div>
 
                         <button

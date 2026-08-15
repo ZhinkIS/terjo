@@ -1,4 +1,4 @@
-import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
+import { Head, router, useForm, usePage } from '@inertiajs/react';
 
 import type { ChangeEvent, FormEvent } from 'react';
 
@@ -8,7 +8,6 @@ import Navbar from '@/components/navbar';
 import SlideshowManager from '@/components/slideshow-manager';
 import { useLanguage } from '@/i18n/language-provider';
 import type { Dictionary } from '@/i18n/locales/id';
-import { logout } from '@/routes';
 import admin from '@/routes/admin';
 import profile from '@/routes/profile';
 import type { Role } from '@/types';
@@ -58,7 +57,25 @@ type DashboardProps = {
     settings: SettingsData;
 };
 
-type TabId = 'profile' | 'members' | 'pending' | 'settings';
+type TabId = 'profile' | 'members' | 'pending' | 'settings' | 'slideshows';
+
+const adminTabs: TabId[] = ['pending', 'members', 'settings', 'slideshows'];
+
+function readInitialTab(pageUrl: string, canManage: boolean): TabId {
+    const requested = new URL(pageUrl, 'http://localhost').searchParams.get(
+        'tab',
+    );
+
+    if (
+        canManage &&
+        requested !== null &&
+        adminTabs.includes(requested as TabId)
+    ) {
+        return requested as TabId;
+    }
+
+    return 'profile';
+}
 
 const roleLabelKeys: Record<Role, keyof Dictionary> = {
     owner: 'role.owner',
@@ -73,6 +90,7 @@ export default function Dashboard({
     settings,
 }: DashboardProps) {
     const { auth, flash } = usePage().props;
+    const pageUrl = usePage().url;
     const { t } = useLanguage();
 
     const user = auth.user;
@@ -80,7 +98,9 @@ export default function Dashboard({
     const canManage =
         user !== null && (user.role === 'admin' || user.role === 'owner');
 
-    const [activeTab, setActiveTab] = useState<TabId>('profile');
+    const [activeTab, setActiveTab] = useState<TabId>(() =>
+        readInitialTab(pageUrl, canManage),
+    );
 
     const tabs = useMemo(() => {
         const base: { id: TabId; label: string }[] = [
@@ -92,11 +112,24 @@ export default function Dashboard({
                 { id: 'pending', label: t('dashboard.tabPending') },
                 { id: 'members', label: t('dashboard.tabMembers') },
                 { id: 'settings', label: t('dashboard.tabSettings') },
+                { id: 'slideshows', label: t('dashboard.tabSlideshows') },
             );
         }
 
         return base;
     }, [canManage, t]);
+
+    function selectTab(tab: TabId) {
+        setActiveTab(tab);
+
+        const baseUrl = pageUrl.split('?')[0];
+
+        history.replaceState(
+            null,
+            '',
+            tab === 'profile' ? baseUrl : `${baseUrl}?tab=${tab}`,
+        );
+    }
 
     if (!user) {
         return null;
@@ -111,16 +144,7 @@ export default function Dashboard({
                     members={
                         canManage && members.length > 0 ? members : undefined
                     }
-                >
-                    <Link
-                        href={logout.url()}
-                        method="post"
-                        as="button"
-                        className="rounded-sm border border-black/15 px-4 py-2 text-sm font-medium transition hover:border-[#C9A227] hover:text-[#C9A227] active:scale-95 dark:border-white/15"
-                    >
-                        {t('nav.signOut')}
-                    </Link>
-                </Navbar>
+                />
 
                 <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-6 px-6 py-8">
                     <div>
@@ -143,7 +167,7 @@ export default function Dashboard({
                             <button
                                 key={tab.id}
                                 type="button"
-                                onClick={() => setActiveTab(tab.id)}
+                                onClick={() => selectTab(tab.id)}
                                 className={`rounded-sm px-4 py-2 text-sm font-medium transition active:scale-95 ${
                                     activeTab === tab.id
                                         ? 'bg-[#C9A227] text-white'
@@ -169,6 +193,9 @@ export default function Dashboard({
                             settings={settings}
                             slideshows={slideshows}
                         />
+                    ) : null}
+                    {activeTab === 'slideshows' && canManage ? (
+                        <SlideshowManager slideshows={slideshows} />
                     ) : null}
                 </main>
             </div>

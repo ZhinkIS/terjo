@@ -3,7 +3,7 @@ import { Head, Link, usePage } from '@inertiajs/react';
 import Navbar from '@/components/navbar';
 import { useLanguage } from '@/i18n/language-provider';
 import type { Dictionary } from '@/i18n/locales/id';
-import { dashboard, home } from '@/routes';
+import { home } from '@/routes';
 import type { Role } from '@/types';
 
 type MemberDetail = {
@@ -42,14 +42,7 @@ export default function MemberShow({ member }: { member: MemberDetail }) {
             <Head title={`${member.name} - ${site.name}`} />
 
             <div className="flex min-h-screen flex-col bg-[#FDFDFC] text-[#1b1b18] dark:bg-[#0a0a0a] dark:text-[#EDEDEC]">
-                <Navbar>
-                    <Link
-                        href={dashboard.url()}
-                        className="rounded-sm bg-[#C9A227] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#b18f1f] active:scale-95"
-                    >
-                        {t('nav.dashboard')}
-                    </Link>
-                </Navbar>
+                <Navbar />
 
                 <main className="mx-auto w-full max-w-5xl flex-1 px-6 py-8">
                     <Link
