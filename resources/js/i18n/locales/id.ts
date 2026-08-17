@@ -44,6 +44,7 @@ export const id = {
     'role.owner': 'Owner',
     'role.admin': 'Admin',
     'role.member': 'Member',
+    'role.slave': 'Slave',
 
     'theme.tooltip': 'Tema: {theme}',
     'theme.light': 'Terang',

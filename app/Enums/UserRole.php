@@ -10,12 +10,15 @@ enum UserRole: string
 
     case Member = 'member';
 
+    case Slave = 'slave';
+
     public function label(): string
     {
         return match ($this) {
             self::Owner => 'Owner',
             self::Admin => 'Admin',
             self::Member => 'Member',
+            self::Slave => 'Slave',
         };
     }
 
@@ -25,14 +28,15 @@ enum UserRole: string
     }
 
     /**
-     * The authority level used to compare roles (Owner > Admin > Member).
+     * The authority level used to compare roles (Owner > Admin > Member > Slave).
      */
     public function rank(): int
     {
         return match ($this) {
-            self::Owner => 3,
-            self::Admin => 2,
-            self::Member => 1,
+            self::Owner => 4,
+            self::Admin => 3,
+            self::Member => 2,
+            self::Slave => 1,
         };
     }
 }

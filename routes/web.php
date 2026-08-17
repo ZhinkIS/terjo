@@ -75,6 +75,9 @@ Route::middleware(['auth', 'role:admin'])
         Route::patch('members/{user}', [MemberController::class, 'update'])
             ->name('members.update');
 
+        Route::patch('members/{user}/role', [MemberController::class, 'updateRole'])
+            ->name('members.updateRole');
+
         Route::delete('members/{user}', [MemberController::class, 'destroy'])
             ->name('members.destroy');
 

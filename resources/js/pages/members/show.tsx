@@ -22,6 +22,7 @@ const roleLabelKeys: Record<Role, keyof Dictionary> = {
     owner: 'role.owner',
     admin: 'role.admin',
     member: 'role.member',
+    slave: 'role.slave',
 };
 
 function initials(name: string): string {

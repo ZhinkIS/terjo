@@ -1,4 +1,4 @@
-import { Head, Link, usePage } from '@inertiajs/react';
+import { Head, Link, usePage, usePoll } from '@inertiajs/react';
 import { useState } from 'react';
 
 import Navbar from '@/components/navbar';
@@ -36,12 +36,14 @@ const roleLabelKeys: Record<Role, keyof Dictionary> = {
     owner: 'role.owner',
     admin: 'role.admin',
     member: 'role.member',
+    slave: 'role.slave',
 };
 
 const roleBadgeStyles: Record<Role, string> = {
     owner: 'bg-[#C9A227]/15 text-[#C9A227]',
     admin: 'bg-[#C9A227]/15 text-[#C9A227]',
     member: 'bg-black/5 text-[#706f6c] dark:bg-white/10 dark:text-[#A1A09A]',
+    slave: 'bg-black/5 text-[#706f6c] dark:bg-white/10 dark:text-[#A1A09A]',
 };
 
 function initials(name: string): string {
@@ -67,6 +69,8 @@ export default function Welcome({
     const isGuest = user === null;
 
     const canViewDirectory = user !== null && user.status === 'approved';
+
+    usePoll(5000, { only: ['members'] });
 
     const [index, setIndex] = useState(0);
     const [rulesOpen, setRulesOpen] = useState(false);

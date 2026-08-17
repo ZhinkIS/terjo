@@ -72,6 +72,13 @@ class UserFactory extends Factory
         ]);
     }
 
+    public function asSlave(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => UserRole::Slave,
+        ]);
+    }
+
     public function asPending(): static
     {
         return $this->state(fn (array $attributes) => [

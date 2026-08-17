@@ -1,4 +1,4 @@
-export type Role = 'owner' | 'admin' | 'member';
+export type Role = 'owner' | 'admin' | 'member' | 'slave';
 
 export type UserStatus = 'pending' | 'approved' | 'rejected';
 

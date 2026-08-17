@@ -113,7 +113,7 @@ class DashboardController extends Controller
                 return User::query()
                     ->where('status', UserStatus::Approved)
                     ->whereKeyNot($user->id)
-                    ->when($user->isAdmin(), fn ($query) => $query->where('role', UserRole::Member))
+                    ->when($user->isAdmin(), fn ($query) => $query->whereIn('role', [UserRole::Member, UserRole::Slave]))
                     ->orderBy('name')
                     ->get()
                     ->map(fn (User $member): array => [

@@ -46,6 +46,7 @@ export const en: Dictionary = {
     'role.owner': 'Owner',
     'role.admin': 'Admin',
     'role.member': 'Member',
+    'role.slave': 'Slave',
 
     'theme.tooltip': 'Theme: {theme}',
     'theme.light': 'Light',

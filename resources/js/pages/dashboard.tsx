@@ -1,4 +1,4 @@
-import { Head, router, useForm, usePage } from '@inertiajs/react';
+import { Head, router, useForm, usePage, usePoll } from '@inertiajs/react';
 
 import type { ChangeEvent, FormEvent } from 'react';
 
@@ -7,10 +7,9 @@ import { useMemo, useState } from 'react';
 import Navbar from '@/components/navbar';
 import SlideshowManager from '@/components/slideshow-manager';
 import { useLanguage } from '@/i18n/language-provider';
-import type { Dictionary } from '@/i18n/locales/id';
 import admin from '@/routes/admin';
 import profile from '@/routes/profile';
-import type { Role } from '@/types';
+import type { Role, User } from '@/types';
 
 type MemberItem = {
     id: number;
@@ -77,12 +76,6 @@ function readInitialTab(pageUrl: string, canManage: boolean): TabId {
     return 'profile';
 }
 
-const roleLabelKeys: Record<Role, keyof Dictionary> = {
-    owner: 'role.owner',
-    admin: 'role.admin',
-    member: 'role.member',
-};
-
 export default function Dashboard({
     members,
     pendingRegistrations,
@@ -97,6 +90,10 @@ export default function Dashboard({
 
     const canManage =
         user !== null && (user.role === 'admin' || user.role === 'owner');
+
+    usePoll(5000, {
+        only: ['members', 'pendingRegistrations'],
+    });
 
     const [activeTab, setActiveTab] = useState<TabId>(() =>
         readInitialTab(pageUrl, canManage),
@@ -186,7 +183,7 @@ export default function Dashboard({
                         />
                     ) : null}
                     {activeTab === 'members' && canManage ? (
-                        <MembersTab members={members} />
+                        <MembersTab members={members} user={user} />
                     ) : null}
                     {activeTab === 'settings' && canManage ? (
                         <SettingsTab
@@ -483,9 +480,24 @@ function PendingRegistrationsTab({
     );
 }
 
-function MembersTab({ members }: { members: MemberItem[] }) {
+function MembersTab({ members, user }: { members: MemberItem[]; user: User }) {
     const { t } = useLanguage();
     const [selected, setSelected] = useState<MemberItem | null>(null);
+
+    const ownRoleLabel: Record<Role, string> = {
+        owner: t('role.owner'),
+        admin: t('role.admin'),
+        member: t('role.member'),
+        slave: t('role.slave'),
+    };
+
+    function handleRoleChange(member: MemberItem, newRole: Role) {
+        router.patch(
+            admin.members.updateRole.url({ user: member.id }),
+            { role: newRole },
+            { preserveState: true },
+        );
+    }
 
     function handleKick(member: MemberItem) {
         if (window.confirm(t('dashboard.confirmKick', { name: member.name }))) {
@@ -541,9 +553,32 @@ function MembersTab({ members }: { members: MemberItem[] }) {
                                         {member.location ?? '-'}
                                     </td>
                                     <td className="px-4 py-3">
-                                        <span className="inline-flex rounded-full bg-[#C9A227]/15 px-2.5 py-0.5 text-xs font-medium text-[#C9A227]">
-                                            {t(roleLabelKeys[member.role])}
-                                        </span>
+                                        {member.id === user.id ? (
+                                            <span className="inline-flex rounded-full bg-[#C9A227]/15 px-2.5 py-0.5 text-xs font-medium text-[#C9A227]">
+                                                {ownRoleLabel[member.role]}
+                                            </span>
+                                        ) : (
+                                            <select
+                                                value={member.role}
+                                                onChange={(e) =>
+                                                    handleRoleChange(
+                                                        member,
+                                                        e.target.value as Role,
+                                                    )
+                                                }
+                                                className="rounded-sm border border-black/15 bg-transparent px-2 py-1 text-xs font-medium text-[#C9A227] transition hover:border-[#C9A227] focus:border-[#C9A227] focus:outline-none dark:border-white/15"
+                                            >
+                                                <option value="admin">
+                                                    {t('role.admin')}
+                                                </option>
+                                                <option value="member">
+                                                    {t('role.member')}
+                                                </option>
+                                                <option value="slave">
+                                                    {t('role.slave')}
+                                                </option>
+                                            </select>
+                                        )}
                                     </td>
                                     <td className="px-4 py-3 text-right">
                                         <div className="flex items-center justify-end gap-2">

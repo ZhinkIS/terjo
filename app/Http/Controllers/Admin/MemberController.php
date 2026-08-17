@@ -7,6 +7,7 @@ use App\Http\Requests\UpdateMemberRequest;
 use App\Models\User;
 use App\Services\AvatarService;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 
@@ -32,6 +33,22 @@ class MemberController extends Controller
         $user->save();
 
         return redirect()->back()->with('success', 'Data anggota berhasil diperbarui.');
+    }
+
+    /**
+     * Change a member's role (owner/admin/member/slave).
+     */
+    public function updateRole(Request $request, User $user): RedirectResponse
+    {
+        Gate::authorize('updateRole', $user);
+
+        $validated = $request->validate([
+            'role' => ['required', 'string', 'in:admin,member,slave'],
+        ]);
+
+        $user->update(['role' => $validated['role']]);
+
+        return redirect()->back()->with('success', 'Role berhasil diperbarui.');
     }
 
     /**

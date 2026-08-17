@@ -15,23 +15,42 @@ class UserPolicy
     }
 
     /**
-     * The owner is absolute, admins may manage members, and members may
-     * only edit their own profile.
+     * Owner may update anyone except other Owners; admin may update any
+     * non-Owner user; a user may always update their own profile.
      */
     public function update(User $actor, User $user): bool
     {
-        return $actor->isOwner()
-            || $actor->is($user)
-            || ($actor->isAdmin() && $user->isMember());
+        if ($actor->isOwner() && ! $user->isOwner()) {
+            return true;
+        }
+
+        if ($actor->isAdmin() && ($user->isMember() || $user->isSlave())) {
+            return true;
+        }
+
+        return $actor->is($user);
     }
 
     /**
-     * Only the owner may delete other staff members; admins may delete
-     * members. Nobody may delete their own account.
+     * Owner may delete anyone except themselves; admin may delete any
+     * non-Owner user. Nobody may delete their own account.
      */
     public function delete(User $actor, User $user): bool
     {
         return ! $actor->is($user)
-            && ($actor->isOwner() || ($actor->isAdmin() && $user->isMember()));
+            && ($actor->isOwner() || ($actor->isAdmin() && ($user->isMember() || $user->isSlave())));
+    }
+
+    /**
+     * Only owner or admin may change another user's role.  Nobody may
+     * promote anyone to Owner.
+     */
+    public function updateRole(User $actor, User $user): bool
+    {
+        if ($user->isOwner()) {
+            return false;
+        }
+
+        return $actor->isOwner() || $actor->isAdmin();
     }
 }

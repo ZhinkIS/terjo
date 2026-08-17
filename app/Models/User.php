@@ -87,6 +87,11 @@ class User extends Authenticatable
         return $this->role === UserRole::Member;
     }
 
+    public function isSlave(): bool
+    {
+        return $this->role === UserRole::Slave;
+    }
+
     public function isPending(): bool
     {
         return $this->status === UserStatus::Pending;
