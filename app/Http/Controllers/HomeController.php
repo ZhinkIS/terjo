@@ -67,6 +67,11 @@ class HomeController extends Controller
                 ->orderBy('position')
                 ->latest()
                 ->get()
+                ->filter(fn (Slideshow $slideshow): bool => Storage::disk('public')->exists(
+                    str_starts_with($slideshow->image_path, '/')
+                        ? ltrim($slideshow->image_path, '/')
+                        : $slideshow->image_path,
+                ))
                 ->map(fn (Slideshow $slideshow): array => [
                     'id' => $slideshow->id,
                     'image_url' => Str::startsWith($slideshow->image_path, '/')

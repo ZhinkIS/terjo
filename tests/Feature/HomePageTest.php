@@ -3,6 +3,7 @@
 use App\Models\Setting;
 use App\Models\Slideshow;
 use App\Models\User;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Testing\AssertableInertia as Assert;
 
 test('guests get no slideshow or directory props', function () {
@@ -58,10 +59,17 @@ test('approved members see the hero slideshow and the member directory', functio
 });
 
 test('the hero slideshow respects the configured position order', function () {
+    Storage::fake('public');
+
     $member = User::factory()->asMember()->create();
-    $middle = Slideshow::factory()->create(['position' => 1]);
-    $first = Slideshow::factory()->create(['position' => 0]);
-    $last = Slideshow::factory()->create(['position' => 2]);
+
+    $first = Slideshow::factory()->create(['position' => 0, 'image_path' => 'slideshows/first.jpg']);
+    $middle = Slideshow::factory()->create(['position' => 1, 'image_path' => 'slideshows/middle.jpg']);
+    $last = Slideshow::factory()->create(['position' => 2, 'image_path' => 'slideshows/last.jpg']);
+
+    Storage::disk('public')->put('slideshows/first.jpg', 'fake');
+    Storage::disk('public')->put('slideshows/middle.jpg', 'fake');
+    Storage::disk('public')->put('slideshows/last.jpg', 'fake');
 
     $this->actingAs($member)
         ->get(route('home'))

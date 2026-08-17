@@ -1,0 +1,9 @@
+{
+    "validation": {
+        "min.string": "Kata sandi minimal :min karakter.",
+        "required": ":Attribute wajib diisi.",
+        "email": "Format :attribute tidak valid.",
+        "unique": ":attribute sudah terdaftar.",
+        "confirmed": "Konfirmasi :attribute tidak cocok."
+    }
+}

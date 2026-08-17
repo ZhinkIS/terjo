@@ -195,6 +195,10 @@ export default function Welcome({
                                                         aria-hidden={
                                                             slideIndex !== index
                                                         }
+                                                        onError={(e) => {
+                                                            e.currentTarget.src =
+                                                                '/images/slide1.jpg';
+                                                        }}
                                                         className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ${
                                                             slideIndex === index
                                                                 ? 'opacity-100'

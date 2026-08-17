@@ -179,6 +179,10 @@ export default function SlideshowManager({
                                 <img
                                     src={slideshow.image_url}
                                     alt=""
+                                    onError={(e) => {
+                                        e.currentTarget.src =
+                                            '/images/slide1.jpg';
+                                    }}
                                     className="h-full w-full object-cover"
                                 />
                             </div>
