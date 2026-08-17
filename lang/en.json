@@ -4,6 +4,7 @@
         "required": "The :attribute field is required.",
         "email": "The :attribute field must be a valid email address.",
         "unique": "The :attribute has already been taken.",
-        "confirmed": "The :attribute confirmation does not match."
+        "confirmed": "The :attribute confirmation does not match.",
+        "password.mixed": "The password must contain a mix of letters and numbers."
     }
 }

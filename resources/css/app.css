@@ -21,3 +21,13 @@
         color-scheme: dark;
     }
 }
+
+#nprogress .bar {
+    transition: all 100ms ease-in-out;
+}
+
+#nprogress .peg {
+    box-shadow:
+        0 0 10px #c9a227,
+        0 0 5px #c9a227;
+}
