@@ -79,9 +79,9 @@ function readInitialTab(pageUrl: string, canManage: boolean): TabId {
 }
 
 export default function Dashboard({
-    members,
-    pendingRegistrations,
-    slideshows,
+    members = [],
+    pendingRegistrations = [],
+    slideshows = [],
     settings,
 }: DashboardProps) {
     const { auth, flash } = usePage().props;
@@ -141,7 +141,7 @@ export default function Dashboard({
             <div className="flex min-h-screen flex-col bg-[#FDFDFC] text-[#1b1b18] dark:bg-[#0a0a0a] dark:text-[#EDEDEC]">
                 <Navbar
                     members={
-                        canManage && members.length > 0 ? members : undefined
+                        canManage && (members ?? []).length > 0 ? members : undefined
                     }
                 />
 

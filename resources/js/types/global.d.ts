@@ -16,10 +16,10 @@ declare module '@inertiajs/core' {
                 logo_url: string | null;
             };
             auth: Auth;
-            sidebarOpen: boolean;
             flash: {
                 success: string | null;
             };
+            errors: Record<string, string>;
             [key: string]: unknown;
         };
     }

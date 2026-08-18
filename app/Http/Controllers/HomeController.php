@@ -63,6 +63,7 @@ class HomeController extends Controller
         /** @var array<int, array<string, mixed>> $slideshows */
         $slideshows = Cache::remember(self::SLIDESHOWS_KEY, self::CACHE_TTL, function (): array {
             return Slideshow::query()
+                ->select('id', 'image_path')
                 ->where('is_active', true)
                 ->orderBy('position')
                 ->latest()
@@ -93,6 +94,7 @@ class HomeController extends Controller
     private function directory(): array
     {
         return User::query()
+            ->select('id', 'name', 'role', 'location', 'age', 'bio', 'profile_picture_url')
             ->where('status', UserStatus::Approved)
             ->orderBy('name')
             ->get()

@@ -35,24 +35,9 @@ class DashboardController extends Controller
             abort(403);
         }
 
-        $members = [];
-        $pendingRegistrations = [];
-        $slideshows = [];
-
-        if ($user->role->canManageSettings()) {
-            $version = (int) Cache::get(User::DIRECTORY_VERSION_KEY, 0);
-
-            $slideshows = $this->slideshows();
-            $members = $this->membersDirectory($user, $version);
-            $pendingRegistrations = $this->pendingRegistrations($version);
-        }
-
         $settings = Setting::current();
 
-        return Inertia::render('dashboard', [
-            'members' => $members,
-            'pendingRegistrations' => $pendingRegistrations,
-            'slideshows' => $slideshows,
+        $props = [
             'settings' => [
                 'site_name' => $settings->site_name ?? config('app.name'),
                 'hero_title' => $settings->heroTitle(),
@@ -63,7 +48,21 @@ class DashboardController extends Controller
                         : Storage::url($settings->logo_path))
                     : null,
             ],
-        ]);
+        ];
+
+        if ($user->role->canManageSettings()) {
+            $version = (int) Cache::get(User::DIRECTORY_VERSION_KEY, 0);
+
+            $props['slideshows'] = $this->slideshows();
+            $props['members'] = $this->membersDirectory($user, $version);
+            $props['pendingRegistrations'] = $this->pendingRegistrations($version);
+        } else {
+            $props['slideshows'] = [];
+            $props['members'] = [];
+            $props['pendingRegistrations'] = [];
+        }
+
+        return Inertia::render('dashboard', $props);
     }
 
     /**
@@ -77,6 +76,7 @@ class DashboardController extends Controller
         /** @var array<int, array<string, mixed>> $slideshows */
         $slideshows = Cache::remember(self::SLIDESHOWS_KEY, self::CACHE_TTL, function (): array {
             return Slideshow::query()
+                ->select('id', 'image_path', 'is_active', 'position', 'created_at')
                 ->orderBy('position')
                 ->latest()
                 ->get()
@@ -111,6 +111,7 @@ class DashboardController extends Controller
             self::CACHE_TTL,
             function () use ($user): array {
                 return User::query()
+                    ->select('id', 'name', 'email', 'role', 'bio', 'age', 'location', 'profile_picture_url')
                     ->where('status', UserStatus::Approved)
                     ->whereKeyNot($user->id)
                     ->when($user->isAdmin(), fn ($query) => $query->whereIn('role', [UserRole::Member, UserRole::Slave]))
@@ -145,6 +146,7 @@ class DashboardController extends Controller
             self::CACHE_TTL,
             function (): array {
                 return User::query()
+                    ->select('id', 'name', 'email', 'bio', 'age', 'location', 'profile_picture_url', 'created_at')
                     ->where('status', UserStatus::Pending)
                     ->latest()
                     ->get()

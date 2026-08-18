@@ -38,33 +38,37 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        $settings = Setting::current();
+
         return [
             ...parent::share($request),
             'name' => config('app.name'),
-            'site' => $this->site(),
+            'site' => [
+                'name' => $settings->site_name ?? config('app.name'),
+                'logo_url' => $settings->logo_path
+                    ? (Str::startsWith($settings->logo_path, '/')
+                        ? asset($settings->logo_path)
+                        : Storage::url($settings->logo_path))
+                    : null,
+            ],
             'auth' => [
-                'user' => $request->user(),
+                'user' => $request->user()
+                    ? [
+                        'id' => $request->user()->id,
+                        'name' => $request->user()->name,
+                        'email' => $request->user()->email,
+                        'role' => $request->user()->role->value,
+                        'status' => $request->user()->status->value,
+                        'profile_picture_url' => $request->user()->profile_picture_url,
+                    ]
+                    : null,
             ],
             'flash' => [
                 'success' => $request->session()->get('success'),
             ],
-        ];
-    }
-
-    /**
-     * @return array{name: string, logo_url: ?string}
-     */
-    private function site(): array
-    {
-        $settings = Setting::current();
-
-        return [
-            'name' => $settings->site_name ?? config('app.name'),
-            'logo_url' => $settings->logo_path
-                ? (Str::startsWith($settings->logo_path, '/')
-                    ? asset($settings->logo_path)
-                    : Storage::url($settings->logo_path))
-                : null,
+            'errors' => $request->session()->get('errors')
+                ? $request->session()->get('errors')->getBag('default')->toArray()
+                : [],
         ];
     }
 }
