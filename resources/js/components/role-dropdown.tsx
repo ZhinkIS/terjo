@@ -150,7 +150,7 @@ export default function RoleDropdown({
                       <div
                           ref={menuRef}
                           style={menuStyle}
-                          className="z-50 overflow-hidden rounded-lg border border-zinc-800 bg-zinc-900 shadow-2xl"
+                          className="z-[9999] overflow-hidden rounded-lg border border-zinc-800 bg-zinc-900 shadow-2xl"
                       >
                           {options.map((role) => (
                               <button
