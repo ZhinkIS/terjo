@@ -5,6 +5,8 @@ import type { ChangeEvent, FormEvent } from 'react';
 import { useMemo, useState } from 'react';
 
 import Navbar from '@/components/navbar';
+import RoleBadge from '@/components/role-badge';
+import RoleDropdown from '@/components/role-dropdown';
 import SlideshowManager from '@/components/slideshow-manager';
 import { useLanguage } from '@/i18n/language-provider';
 import admin from '@/routes/admin';
@@ -484,13 +486,6 @@ function MembersTab({ members, user }: { members: MemberItem[]; user: User }) {
     const { t } = useLanguage();
     const [selected, setSelected] = useState<MemberItem | null>(null);
 
-    const ownRoleLabel: Record<Role, string> = {
-        owner: t('role.owner'),
-        admin: t('role.admin'),
-        member: t('role.member'),
-        slave: t('role.slave'),
-    };
-
     function handleRoleChange(member: MemberItem, newRole: Role) {
         router.patch(
             admin.members.updateRole.url({ user: member.id }),
@@ -554,30 +549,17 @@ function MembersTab({ members, user }: { members: MemberItem[]; user: User }) {
                                     </td>
                                     <td className="px-4 py-3">
                                         {member.id === user.id ? (
-                                            <span className="inline-flex rounded-full bg-[#C9A227]/15 px-2.5 py-0.5 text-xs font-medium text-[#C9A227]">
-                                                {ownRoleLabel[member.role]}
-                                            </span>
+                                            <RoleBadge role={member.role} />
                                         ) : (
-                                            <select
+                                            <RoleDropdown
                                                 value={member.role}
-                                                onChange={(e) =>
+                                                onChange={(newRole) =>
                                                     handleRoleChange(
                                                         member,
-                                                        e.target.value as Role,
+                                                        newRole,
                                                     )
                                                 }
-                                                className="rounded-sm border border-black/15 bg-transparent px-2 py-1 text-xs font-medium text-[#C9A227] transition hover:border-[#C9A227] focus:border-[#C9A227] focus:outline-none dark:border-white/15"
-                                            >
-                                                <option value="admin">
-                                                    {t('role.admin')}
-                                                </option>
-                                                <option value="member">
-                                                    {t('role.member')}
-                                                </option>
-                                                <option value="slave">
-                                                    {t('role.slave')}
-                                                </option>
-                                            </select>
+                                            />
                                         )}
                                     </td>
                                     <td className="px-4 py-3 text-right">

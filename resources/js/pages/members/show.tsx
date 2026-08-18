@@ -1,8 +1,8 @@
 import { Head, Link, usePage } from '@inertiajs/react';
 
 import Navbar from '@/components/navbar';
+import RoleBadge from '@/components/role-badge';
 import { useLanguage } from '@/i18n/language-provider';
-import type { Dictionary } from '@/i18n/locales/id';
 import { home } from '@/routes';
 import type { Role } from '@/types';
 
@@ -16,13 +16,6 @@ type MemberDetail = {
     location: string | null;
     profile_picture_url: string | null;
     created_at: string | null;
-};
-
-const roleLabelKeys: Record<Role, keyof Dictionary> = {
-    owner: 'role.owner',
-    admin: 'role.admin',
-    member: 'role.member',
-    slave: 'role.slave',
 };
 
 function initials(name: string): string {
@@ -73,9 +66,7 @@ export default function MemberShow({ member }: { member: MemberDetail }) {
                             </h1>
 
                             <div className="mt-2 flex flex-wrap items-center gap-2 text-sm text-[#706f6c] dark:text-[#A1A09A]">
-                                <span className="inline-flex rounded-full bg-[#C9A227]/15 px-2.5 py-0.5 text-xs font-medium text-[#C9A227]">
-                                    {t(roleLabelKeys[member.role])}
-                                </span>
+                                <RoleBadge role={member.role} />
                                 {member.created_at ? (
                                     <span>
                                         {t('member.joined', {
@@ -137,7 +128,7 @@ export default function MemberShow({ member }: { member: MemberDetail }) {
                                             {t('member.role')}
                                         </dt>
                                         <dd className="min-w-0 text-right">
-                                            {t(roleLabelKeys[member.role])}
+                                            <RoleBadge role={member.role} />
                                         </dd>
                                     </div>
                                     <div className="flex gap-4 px-4 py-2.5">

@@ -2,8 +2,8 @@ import { Head, Link, usePage, usePoll } from '@inertiajs/react';
 import { useState } from 'react';
 
 import Navbar from '@/components/navbar';
+import RoleBadge from '@/components/role-badge';
 import RulesModal from '@/components/rules-modal';
-import type { Dictionary } from '@/i18n';
 import { useLanguage } from '@/i18n/language-provider';
 import { cn } from '@/lib/utils';
 import { login } from '@/routes';
@@ -30,20 +30,6 @@ type WelcomeProps = {
     members?: Member[];
     heroTitle: string;
     heroSubtitle: string;
-};
-
-const roleLabelKeys: Record<Role, keyof Dictionary> = {
-    owner: 'role.owner',
-    admin: 'role.admin',
-    member: 'role.member',
-    slave: 'role.slave',
-};
-
-const roleBadgeStyles: Record<Role, string> = {
-    owner: 'bg-[#C9A227]/15 text-[#C9A227]',
-    admin: 'bg-[#C9A227]/15 text-[#C9A227]',
-    member: 'bg-black/5 text-[#706f6c] dark:bg-white/10 dark:text-[#A1A09A]',
-    slave: 'bg-black/5 text-[#706f6c] dark:bg-white/10 dark:text-[#A1A09A]',
 };
 
 function initials(name: string): string {
@@ -335,16 +321,11 @@ export default function Welcome({
                                                             <h3 className="truncate font-medium">
                                                                 {member.name}
                                                             </h3>
-                                                            <span
-                                                                className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${roleBadgeStyles[member.role]}`}
-                                                            >
-                                                                {t(
-                                                                    roleLabelKeys[
-                                                                        member
-                                                                            .role
-                                                                    ],
-                                                                )}
-                                                            </span>
+                                                            <RoleBadge
+                                                                role={
+                                                                    member.role
+                                                                }
+                                                            />
                                                         </div>
                                                     </div>
 

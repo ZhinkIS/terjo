@@ -1,8 +1,8 @@
 import { Link } from '@inertiajs/react';
 import { useEffect, useMemo, useState } from 'react';
 
+import RoleBadge from '@/components/role-badge';
 import { useLanguage } from '@/i18n/language-provider';
-import type { Dictionary } from '@/i18n/locales/id';
 import { cn } from '@/lib/utils';
 import memberRoutes from '@/routes/members';
 import type { Role } from '@/types';
@@ -21,20 +21,6 @@ type SearchModalProps = {
     open: boolean;
     onClose: () => void;
     members: SearchableMember[];
-};
-
-const roleLabelKeys: Record<Role, keyof Dictionary> = {
-    owner: 'role.owner',
-    admin: 'role.admin',
-    member: 'role.member',
-    slave: 'role.slave',
-};
-
-const roleBadgeStyles: Record<Role, string> = {
-    owner: 'bg-[#C9A227]/15 text-[#C9A227]',
-    admin: 'bg-[#C9A227]/15 text-[#C9A227]',
-    member: 'bg-black/5 text-[#706f6c] dark:bg-white/10 dark:text-[#A1A09A]',
-    slave: 'bg-black/5 text-[#706f6c] dark:bg-white/10 dark:text-[#A1A09A]',
 };
 
 function initials(name: string): string {
@@ -216,15 +202,9 @@ export default function SearchModal({
                                                         <span className="truncate font-medium">
                                                             {member.name}
                                                         </span>
-                                                        <span
-                                                            className={`inline-flex shrink-0 rounded-full px-2 py-0.5 text-xs font-medium ${roleBadgeStyles[member.role]}`}
-                                                        >
-                                                            {t(
-                                                                roleLabelKeys[
-                                                                    member.role
-                                                                ],
-                                                            )}
-                                                        </span>
+                                                        <RoleBadge
+                                                            role={member.role}
+                                                        />
                                                     </span>
 
                                                     <span className="mt-0.5 block truncate text-sm text-[#706f6c] dark:text-[#A1A09A]">

@@ -27,15 +27,15 @@
     "file": "assets/instrument-sans-600-normal-B9e8oLYv.woff",
     "src": "_instrument-sans-600-normal-B9e8oLYv.woff"
   },
-  "_navbar-C7KKRw9X.js": {
-    "file": "assets/navbar-C7KKRw9X.js",
+  "_navbar-CNbz5CuS.js": {
+    "file": "assets/navbar-CNbz5CuS.js",
     "name": "navbar",
     "imports": [
       "resources/js/app.tsx"
     ]
   },
   "resources/css/app.css": {
-    "file": "assets/app-BhKsrFqh.css",
+    "file": "assets/app-DW1dIU7m.css",
     "name": "app",
     "names": [
       "app.css"
@@ -44,7 +44,7 @@
     "isEntry": true
   },
   "resources/js/app.tsx": {
-    "file": "assets/app-CpKDPBs-.js",
+    "file": "assets/app-D28DK68Q.js",
     "name": "app",
     "src": "resources/js/app.tsx",
     "isEntry": true,
@@ -58,63 +58,63 @@
     ]
   },
   "resources/js/pages/auth/login.tsx": {
-    "file": "assets/login-mh7vr0Ef.js",
+    "file": "assets/login-6ngpWnRh.js",
     "name": "login",
     "src": "resources/js/pages/auth/login.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_navbar-C7KKRw9X.js"
+      "_navbar-CNbz5CuS.js"
     ]
   },
   "resources/js/pages/auth/register.tsx": {
-    "file": "assets/register-rJLQ2ab1.js",
+    "file": "assets/register-Da_0wljq.js",
     "name": "register",
     "src": "resources/js/pages/auth/register.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_navbar-C7KKRw9X.js"
+      "_navbar-CNbz5CuS.js"
     ]
   },
   "resources/js/pages/dashboard.tsx": {
-    "file": "assets/dashboard-hINNa0SU.js",
+    "file": "assets/dashboard-t9rjJ76a.js",
     "name": "dashboard",
     "src": "resources/js/pages/dashboard.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_navbar-C7KKRw9X.js"
+      "_navbar-CNbz5CuS.js"
     ]
   },
   "resources/js/pages/members/show.tsx": {
-    "file": "assets/show-BtGX04bC.js",
+    "file": "assets/show-BPw5hKob.js",
     "name": "show",
     "src": "resources/js/pages/members/show.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_navbar-C7KKRw9X.js"
+      "_navbar-CNbz5CuS.js"
     ]
   },
   "resources/js/pages/pending.tsx": {
-    "file": "assets/pending-rNBgfONz.js",
+    "file": "assets/pending-BXFJNaHD.js",
     "name": "pending",
     "src": "resources/js/pages/pending.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_navbar-C7KKRw9X.js"
+      "_navbar-CNbz5CuS.js"
     ]
   },
   "resources/js/pages/welcome.tsx": {
-    "file": "assets/welcome-B0kfBUr4.js",
+    "file": "assets/welcome-BSTDQfeO.js",
     "name": "welcome",
     "src": "resources/js/pages/welcome.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_navbar-C7KKRw9X.js"
+      "_navbar-CNbz5CuS.js"
     ]
   }
 }
