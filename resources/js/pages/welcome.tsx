@@ -231,7 +231,7 @@ export default function Welcome({
                                                     TERJO TEAM
                                                 </span>
                                                 <img
-                                                    src="/images/badge-logo.png"
+                                                    src="/images/logo.png"
                                                     alt=""
                                                     aria-hidden="true"
                                                     onError={fallbackToLogo}

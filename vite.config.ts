@@ -34,6 +34,21 @@ export default defineConfig({
                   }),
               ]),
     ],
+    build: {
+        rollupOptions: {
+            output: {
+                assetFileNames: (assetInfo) => {
+                    const names =
+                        assetInfo.names ??
+                        (assetInfo.name ? [assetInfo.name] : []);
+
+                    return names.some((name) => name.endsWith('.css'))
+                        ? 'assets/[name][extname]'
+                        : 'assets/[name]-[hash][extname]';
+                },
+            },
+        },
+    },
     server: {
         host: true,
         hmr: {
