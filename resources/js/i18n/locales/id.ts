@@ -1,6 +1,6 @@
 export const id = {
     'common.backHome': '← Kembali ke halaman utama',
-    'common.copyright': '© {year} {site}. Komunitas otomotif eksklusif.',
+    'common.copyright': '© {year} {site}. {description}',
     'common.cancel': 'Batal',
     'common.save': 'Simpan',
     'common.saving': 'Menyimpan...',
@@ -54,6 +54,8 @@ export const id = {
     'hero.title': 'Komunitas Terjocore',
     'hero.subtitle':
         'Ini Adalah Website Terjo Perkumpulan Orang-Orang Dari Segala Penjuru Dunia. Jika Anda Merasa Bahwa Anda Adalah Member Terjo, Silahkan Klik Tombol Masuk/Login Di Pojok Kanan Atas.',
+    'hero.tagline':
+        'Selamat datang di Terjocores! Di mana kreativitas, keunikan, dan petualangan para Terjo member berkumpul menjadi satu.',
     'hero.loginButton': 'Masuk',
     'hero.rules': 'RULES!!!',
     'hero.memberCount': '{count} anggota ditampilkan',
@@ -65,6 +67,8 @@ export const id = {
     'hero.nextSlide': 'Slideshow berikutnya',
     'hero.goToSlide': 'Ke slideshow {number}',
 
+    'footer.description': 'Komunitas digital eksklusif.',
+
     'auth.loginTitle': 'Masuk ke akun Anda',
     'auth.loginSubtitle': 'Komunitas eksklusif Terjocore.',
     'auth.remember': 'Ingat saya',
@@ -74,6 +78,12 @@ export const id = {
     'auth.registerSubtitle': 'Bergabunglah dengan komunitas eksklusif.',
     'auth.registerSubmit': 'Daftar',
     'auth.hasAccount': 'Sudah punya akun?',
+    'auth.overlayKicker': 'TERJOCORE // AKSES AMAN',
+    'auth.welcomeBackTitle': 'Selamat Datang Kembali, Terjo!',
+    'auth.welcomeBackCopy':
+        'Masuk untuk melanjutkan akses eksklusif ke komunitas.',
+    'auth.joinTitle': 'Bergabunglah dengan Terjocore!',
+    'auth.joinCopy': 'Buat akun dan mulai perjalanan otomotif eksklusifmu.',
 
     'pending.head': 'Menunggu Persetujuan',
     'pending.title': 'Akun Sedang Dievaluasi',

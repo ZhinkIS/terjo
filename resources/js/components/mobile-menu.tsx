@@ -19,16 +19,28 @@ function initials(name: string): string {
 const menuItemClassName =
     'flex w-full items-center justify-between gap-2 rounded-md px-4 py-2.5 text-sm text-[#1b1b18] transition-colors hover:bg-black/5 hover:text-[#C9A227] dark:text-[#EDEDEC] dark:hover:bg-white/10';
 
+const neumorphicMenuItemClassName =
+    'flex w-full items-center justify-between gap-2 rounded-full px-4 py-2.5 text-sm text-[var(--neu-ink)] transition hover:text-[var(--neu-accent)] active:scale-[0.98]';
+
 type MobileMenuProps = {
     open: boolean;
     onClose: () => void;
+    neumorphic?: boolean;
 };
 
-export default function MobileMenu({ open, onClose }: MobileMenuProps) {
+export default function MobileMenu({
+    open,
+    onClose,
+    neumorphic = true,
+}: MobileMenuProps) {
     const { auth } = usePage().props;
     const { t, language, setLanguage } = useLanguage();
 
     const user = auth.user;
+
+    const itemClassName = neumorphic
+        ? neumorphicMenuItemClassName
+        : menuItemClassName;
 
     useEffect(() => {
         if (!open) {
@@ -66,7 +78,10 @@ export default function MobileMenu({ open, onClose }: MobileMenuProps) {
 
             <div
                 className={cn(
-                    'absolute inset-x-0 top-full z-50 overflow-hidden rounded-b-2xl border-x border-b border-black/10 bg-[#FDFDFC] text-[#1b1b18] shadow-2xl transition-all duration-200 ease-out md:hidden dark:border-white/10 dark:bg-[#111111] dark:text-white',
+                    'absolute inset-x-0 top-full z-50 overflow-hidden rounded-b-2xl border-x border-b border-black/10 bg-[#FDFDFC] text-[#1b1b18] transition-all duration-200 ease-out md:hidden dark:border-white/10 dark:bg-[#111111] dark:text-white',
+                    neumorphic
+                        ? 'rounded-b-[2rem] border-0 bg-[var(--neu-bg)] text-[var(--neu-ink)] neu-raised-lg dark:bg-[var(--neu-bg)] dark:text-[var(--neu-ink)]'
+                        : 'shadow-2xl',
                     open
                         ? 'translate-y-0 opacity-100'
                         : 'pointer-events-none -translate-y-3 opacity-0',
@@ -80,7 +95,11 @@ export default function MobileMenu({ open, onClose }: MobileMenuProps) {
                                 type="button"
                                 onClick={onClose}
                                 aria-label={t('nav.closeMenu')}
-                                className="flex items-center gap-1 rounded-sm border border-black/15 px-3 py-1.5 text-sm font-medium transition hover:border-[#C9A227] hover:text-[#C9A227] active:scale-95 dark:border-white/15 dark:text-white"
+                                className={cn(
+                                    'flex items-center gap-1 rounded-sm border border-black/15 px-3 py-1.5 text-sm font-medium transition hover:border-[#C9A227] hover:text-[#C9A227] active:scale-95 dark:border-white/15 dark:text-white',
+                                    neumorphic &&
+                                        'rounded-full border-0 bg-[var(--neu-bg)] px-4 py-2 text-[var(--neu-muted)] neu-raised-sm hover:text-[var(--neu-accent)] active:neu-inset-sm dark:border-0 dark:text-[var(--neu-muted)]',
+                                )}
                             >
                                 <svg
                                     width={14}
@@ -100,7 +119,13 @@ export default function MobileMenu({ open, onClose }: MobileMenuProps) {
                         </header>
 
                         <div className="px-6 pt-4 pb-8">
-                            <section className="rounded-2xl border border-black/10 bg-black/5 p-5 dark:border-white/10 dark:bg-white/5">
+                            <section
+                                className={cn(
+                                    'rounded-2xl border border-black/10 bg-black/5 p-5 dark:border-white/10 dark:bg-white/5',
+                                    neumorphic &&
+                                        'rounded-[1.5rem] border-0 bg-[var(--neu-bg)] neu-inset dark:bg-[var(--neu-bg)]',
+                                )}
+                            >
                                 <div className="flex items-center gap-3">
                                     {user ? (
                                         user.profile_picture_url ? (
@@ -158,7 +183,7 @@ export default function MobileMenu({ open, onClose }: MobileMenuProps) {
                                                         href={dashboard.url()}
                                                         onClick={onClose}
                                                         className={
-                                                            menuItemClassName
+                                                            itemClassName
                                                         }
                                                     >
                                                         {t('nav.dashboard')}
@@ -172,7 +197,7 @@ export default function MobileMenu({ open, onClose }: MobileMenuProps) {
                                                         )}
                                                         onClick={onClose}
                                                         className={
-                                                            menuItemClassName
+                                                            itemClassName
                                                         }
                                                     >
                                                         {t('nav.profile')}
@@ -186,7 +211,7 @@ export default function MobileMenu({ open, onClose }: MobileMenuProps) {
                                                 as="button"
                                                 onClick={onClose}
                                                 className={cn(
-                                                    menuItemClassName,
+                                                    itemClassName,
                                                     'cursor-pointer text-red-600 hover:text-red-500 dark:text-red-400 dark:hover:bg-zinc-800/60 dark:hover:text-red-300',
                                                 )}
                                             >
@@ -198,7 +223,11 @@ export default function MobileMenu({ open, onClose }: MobileMenuProps) {
                                             <Link
                                                 href={login.url()}
                                                 onClick={onClose}
-                                                className="w-full rounded-lg bg-[#C9A227] px-4 py-3 text-center text-sm font-semibold text-white transition hover:bg-[#b18f1f] active:scale-[0.98]"
+                                                className={cn(
+                                                    'w-full rounded-lg bg-[#C9A227] px-4 py-3 text-center text-sm font-semibold text-white transition hover:bg-[#b18f1f] active:scale-[0.98]',
+                                                    neumorphic &&
+                                                        'rounded-full bg-[var(--neu-bg)] text-[var(--neu-accent)] neu-raised hover:bg-[var(--neu-bg)] active:neu-inset-sm',
+                                                )}
                                             >
                                                 {t('nav.signIn')}
                                             </Link>
@@ -206,7 +235,11 @@ export default function MobileMenu({ open, onClose }: MobileMenuProps) {
                                             <Link
                                                 href={register.url()}
                                                 onClick={onClose}
-                                                className="w-full rounded-lg border border-black/15 px-4 py-3 text-center text-sm font-semibold transition hover:border-[#C9A227] hover:text-[#C9A227] active:scale-[0.98] dark:border-white/15 dark:text-white"
+                                                className={cn(
+                                                    'w-full rounded-lg border border-black/15 px-4 py-3 text-center text-sm font-semibold transition hover:border-[#C9A227] hover:text-[#C9A227] active:scale-[0.98] dark:border-white/15 dark:text-white',
+                                                    neumorphic &&
+                                                        'rounded-full border-0 bg-[var(--neu-bg)] text-[var(--neu-ink)] neu-raised-sm hover:text-[var(--neu-accent)] active:neu-inset-sm dark:border-0 dark:text-[var(--neu-ink)]',
+                                                )}
                                             >
                                                 {t('nav.signUp')}
                                             </Link>
@@ -215,8 +248,20 @@ export default function MobileMenu({ open, onClose }: MobileMenuProps) {
                                 </div>
                             </section>
 
-                            <section className="mt-4 rounded-2xl border border-black/10 bg-black/5 p-5 dark:border-white/10 dark:bg-white/5">
-                                <p className="text-xs font-semibold tracking-widest text-[#706f6c] uppercase dark:text-white/50">
+                            <section
+                                className={cn(
+                                    'mt-4 rounded-2xl border border-black/10 bg-black/5 p-5 dark:border-white/10 dark:bg-white/5',
+                                    neumorphic &&
+                                        'rounded-[1.5rem] border-0 bg-[var(--neu-bg)] neu-inset dark:bg-[var(--neu-bg)]',
+                                )}
+                            >
+                                <p
+                                    className={cn(
+                                        'text-xs font-semibold tracking-widest text-[#706f6c] uppercase dark:text-white/50',
+                                        neumorphic &&
+                                            'text-[var(--neu-muted)] dark:text-[var(--neu-muted)]',
+                                    )}
+                                >
                                     {t('nav.language')}
                                 </p>
 
@@ -238,6 +283,10 @@ export default function MobileMenu({ open, onClose }: MobileMenuProps) {
                                                     active
                                                         ? 'bg-black/10 text-[#1b1b18] dark:bg-white/10 dark:text-white'
                                                         : 'text-[#706f6c] hover:bg-black/5 hover:text-[#1b1b18] dark:text-white/70 dark:hover:bg-white/5 dark:hover:text-white',
+                                                    neumorphic &&
+                                                        (active
+                                                            ? 'rounded-full bg-[var(--neu-bg)] text-[var(--neu-accent)] neu-inset-sm dark:bg-[var(--neu-bg)] dark:text-[var(--neu-accent)]'
+                                                            : 'rounded-full text-[var(--neu-muted)] hover:text-[var(--neu-ink)] dark:text-[var(--neu-muted)] dark:hover:text-[var(--neu-ink)]'),
                                                 )}
                                             >
                                                 <span className="flex items-center gap-3">

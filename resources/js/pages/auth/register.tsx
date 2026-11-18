@@ -5,9 +5,20 @@ import { useState } from 'react';
 
 import Navbar from '@/components/navbar';
 import { useLanguage } from '@/i18n/language-provider';
+import { cn } from '@/lib/utils';
 import { home, login } from '@/routes';
-
 import { store } from '@/routes/register';
+
+const fieldClassName =
+    'w-full rounded-2xl border-0 bg-[var(--neu-bg)] px-4 py-3 text-sm text-[var(--neu-ink)] neu-inset-sm transition outline-none placeholder:text-[var(--neu-muted)] focus:ring-2 focus:ring-[var(--neu-accent)]/50';
+
+const labelClassName =
+    'text-xs font-bold tracking-[0.2em] text-[var(--neu-muted)] uppercase';
+
+const errorClassName = 'text-sm text-red-600 dark:text-red-400';
+
+const submitClassName =
+    'mt-2 w-full rounded-full bg-[var(--neu-bg)] px-6 py-3.5 text-sm font-black tracking-[0.2em] text-[var(--neu-accent)] uppercase neu-raised transition hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] active:neu-inset disabled:cursor-not-allowed disabled:opacity-50';
 
 export default function Register() {
     const { t } = useLanguage();
@@ -33,25 +44,35 @@ export default function Register() {
         <>
             <Head title={t('auth.registerSubmit')} />
 
-            <div className="flex min-h-screen flex-col bg-[#FDFDFC] text-[#1b1b18] dark:bg-[#0a0a0a] dark:text-[#EDEDEC]">
-                <Navbar />
+            <div className="flex min-h-svh flex-col bg-[var(--neu-bg)] text-[var(--neu-ink)] transition-colors duration-300">
+                <Navbar pill />
 
                 <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col px-6 pt-6 pb-8">
                     <Link
                         href={home.url()}
-                        className="self-start text-sm text-[#706f6c] transition hover:text-[#C9A227] active:opacity-70 dark:text-[#A1A09A]"
+                        className="self-start rounded-full px-2 py-1 text-sm text-[var(--neu-muted)] transition hover:text-[var(--neu-accent)] active:scale-95"
                     >
                         {t('common.backHome')}
                     </Link>
 
                     <div className="flex flex-1 flex-col items-center justify-center py-10">
-                        <div className="w-full max-w-sm rounded-lg border border-black/10 bg-white p-6 pb-8 shadow-sm dark:border-white/10 dark:bg-[#161615]">
-                            <h1 className="mb-1 font-medium text-[#1b1b18] dark:text-[#EDEDEC]">
-                                {t('auth.registerTitle')}
-                            </h1>
-                            <p className="mb-6 text-sm text-[#706f6c] dark:text-[#A1A09A]">
-                                {t('auth.registerSubtitle')}
-                            </p>
+                        <div className="w-full max-w-md rounded-[2rem] bg-[var(--neu-bg)] p-6 pb-8 neu-raised sm:p-8">
+                            <div className="mb-6">
+                                <p className="inline-flex items-center gap-2 rounded-full bg-[var(--neu-bg)] px-3 py-1 text-[10px] font-bold tracking-[0.25em] text-[var(--neu-accent)] uppercase neu-inset-sm">
+                                    <span
+                                        aria-hidden="true"
+                                        className="h-1.5 w-1.5 animate-pulse rounded-full bg-[var(--neu-accent)]"
+                                    />
+                                    {t('auth.overlayKicker')}
+                                </p>
+
+                                <h1 className="mt-4 text-2xl font-black tracking-[0.08em] text-balance text-[var(--neu-ink)] uppercase neu-text">
+                                    {t('auth.registerTitle')}
+                                </h1>
+                                <p className="mt-2 text-sm text-[var(--neu-muted)]">
+                                    {t('auth.registerSubtitle')}
+                                </p>
+                            </div>
 
                             <form
                                 onSubmit={submit}
@@ -60,7 +81,7 @@ export default function Register() {
                                 <div className="flex flex-col gap-2">
                                     <label
                                         htmlFor="name"
-                                        className="text-sm text-[#1b1b18] dark:text-[#EDEDEC]"
+                                        className={labelClassName}
                                     >
                                         {t('common.name')}
                                     </label>
@@ -73,10 +94,10 @@ export default function Register() {
                                         onChange={(e) =>
                                             setData('name', e.target.value)
                                         }
-                                        className="rounded-sm border border-black/15 px-3 py-2 text-sm text-[#1b1b18] transition outline-none focus:border-[#C9A227] focus:ring-1 focus:ring-[#C9A227] dark:border-white/15 dark:bg-[#0a0a0a] dark:text-[#EDEDEC]"
+                                        className={fieldClassName}
                                     />
                                     {errors.name && (
-                                        <p className="text-sm text-red-600 dark:text-red-400">
+                                        <p className={errorClassName}>
                                             {errors.name}
                                         </p>
                                     )}
@@ -85,7 +106,7 @@ export default function Register() {
                                 <div className="flex flex-col gap-2">
                                     <label
                                         htmlFor="email"
-                                        className="text-sm text-[#1b1b18] dark:text-[#EDEDEC]"
+                                        className={labelClassName}
                                     >
                                         {t('common.email')}
                                     </label>
@@ -98,10 +119,10 @@ export default function Register() {
                                         onChange={(e) =>
                                             setData('email', e.target.value)
                                         }
-                                        className="rounded-sm border border-black/15 px-3 py-2 text-sm text-[#1b1b18] transition outline-none focus:border-[#C9A227] focus:ring-1 focus:ring-[#C9A227] dark:border-white/15 dark:bg-[#0a0a0a] dark:text-[#EDEDEC]"
+                                        className={fieldClassName}
                                     />
                                     {errors.email && (
-                                        <p className="text-sm text-red-600 dark:text-red-400">
+                                        <p className={errorClassName}>
                                             {errors.email}
                                         </p>
                                     )}
@@ -110,7 +131,7 @@ export default function Register() {
                                 <div className="flex flex-col gap-2">
                                     <label
                                         htmlFor="password"
-                                        className="text-sm text-[#1b1b18] dark:text-[#EDEDEC]"
+                                        className={labelClassName}
                                     >
                                         {t('common.password')}
                                     </label>
@@ -131,14 +152,17 @@ export default function Register() {
                                                     e.target.value,
                                                 )
                                             }
-                                            className="w-full rounded-sm border border-black/15 px-3 py-2 pr-10 text-sm text-[#1b1b18] transition outline-none focus:border-[#C9A227] focus:ring-1 focus:ring-[#C9A227] dark:border-white/15 dark:bg-[#0a0a0a] dark:text-[#EDEDEC]"
+                                            className={cn(
+                                                fieldClassName,
+                                                'pr-12',
+                                            )}
                                         />
                                         <button
                                             type="button"
                                             onClick={() =>
                                                 setShowPassword(!showPassword)
                                             }
-                                            className="absolute top-1/2 right-2 -translate-y-1/2 p-0.5 text-[#706f6c] transition hover:text-[#C9A227] dark:text-[#A1A09A]"
+                                            className="absolute top-1/2 right-2 -translate-y-1/2 rounded-full p-1.5 text-[var(--neu-muted)] transition hover:text-[var(--neu-accent)] active:scale-95 active:neu-inset-sm"
                                             tabIndex={-1}
                                         >
                                             {showPassword ? (
@@ -184,7 +208,7 @@ export default function Register() {
                                         </button>
                                     </div>
                                     {errors.password && (
-                                        <p className="text-sm text-red-600 dark:text-red-400">
+                                        <p className={errorClassName}>
                                             {errors.password}
                                         </p>
                                     )}
@@ -193,7 +217,7 @@ export default function Register() {
                                 <div className="flex flex-col gap-2">
                                     <label
                                         htmlFor="password_confirmation"
-                                        className="text-sm text-[#1b1b18] dark:text-[#EDEDEC]"
+                                        className={labelClassName}
                                     >
                                         {t('common.passwordConfirm')}
                                     </label>
@@ -214,7 +238,10 @@ export default function Register() {
                                                     e.target.value,
                                                 )
                                             }
-                                            className="w-full rounded-sm border border-black/15 px-3 py-2 pr-10 text-sm text-[#1b1b18] transition outline-none focus:border-[#C9A227] focus:ring-1 focus:ring-[#C9A227] dark:border-white/15 dark:bg-[#0a0a0a] dark:text-[#EDEDEC]"
+                                            className={cn(
+                                                fieldClassName,
+                                                'pr-12',
+                                            )}
                                         />
                                         <button
                                             type="button"
@@ -223,7 +250,7 @@ export default function Register() {
                                                     !showConfirmPassword,
                                                 )
                                             }
-                                            className="absolute top-1/2 right-2 -translate-y-1/2 p-0.5 text-[#706f6c] transition hover:text-[#C9A227] dark:text-[#A1A09A]"
+                                            className="absolute top-1/2 right-2 -translate-y-1/2 rounded-full p-1.5 text-[var(--neu-muted)] transition hover:text-[var(--neu-accent)] active:scale-95 active:neu-inset-sm"
                                             tabIndex={-1}
                                         >
                                             {showConfirmPassword ? (
@@ -269,7 +296,7 @@ export default function Register() {
                                         </button>
                                     </div>
                                     {errors.password_confirmation && (
-                                        <p className="text-sm text-red-600 dark:text-red-400">
+                                        <p className={errorClassName}>
                                             {errors.password_confirmation}
                                         </p>
                                     )}
@@ -278,7 +305,7 @@ export default function Register() {
                                 <button
                                     type="submit"
                                     disabled={processing}
-                                    className="rounded-sm bg-[#C9A227] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#b18f1f] active:scale-95 disabled:opacity-50"
+                                    className={submitClassName}
                                 >
                                     {processing
                                         ? t('common.processing')
@@ -286,11 +313,11 @@ export default function Register() {
                                 </button>
                             </form>
 
-                            <p className="mt-6 text-center text-sm text-[#706f6c] dark:text-[#A1A09A]">
+                            <p className="mt-6 text-center text-sm text-[var(--neu-muted)]">
                                 {t('auth.hasAccount')}{' '}
                                 <Link
                                     href={login.url()}
-                                    className="font-medium text-[#1b1b18] underline underline-offset-4 transition active:opacity-70 dark:text-[#EDEDEC]"
+                                    className="rounded font-bold text-[var(--neu-accent)] underline-offset-4 transition hover:underline active:scale-95"
                                 >
                                     {t('auth.loginSubmit')}
                                 </Link>

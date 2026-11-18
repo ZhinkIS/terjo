@@ -6,8 +6,10 @@ Before planning or editing, find the row whose globs match the file's path and r
 | --- | --- |
 | app/Http/Controllers/Admin/RegistrationController.php | .ai/rules/admin.md |
 | app/** | .ai/rules/app.md |
+| resources/js/pages/auth/login.tsx | .ai/rules/auth.md |
 | resources/js/components/navbar.tsx | .ai/rules/components.md |
 | app/Http/Controllers/** | .ai/rules/controllers.md |
+| resources/css/app.css | .ai/rules/css.md |
 | resources/js/i18n/** | .ai/rules/i18n.md |
 | resources/js/** | .ai/rules/js.md |
 | app/Http/Middleware/** | .ai/rules/middleware.md |

@@ -9,6 +9,7 @@ import RoleBadge from '@/components/role-badge';
 import RoleDropdown from '@/components/role-dropdown';
 import SlideshowManager from '@/components/slideshow-manager';
 import { useLanguage } from '@/i18n/language-provider';
+import { cn } from '@/lib/utils';
 import admin from '@/routes/admin';
 import profile from '@/routes/profile';
 import type { Role, User } from '@/types';
@@ -61,6 +62,78 @@ type DashboardProps = {
 type TabId = 'profile' | 'members' | 'pending' | 'settings' | 'slideshows';
 
 const adminTabs: TabId[] = ['pending', 'members', 'settings', 'slideshows'];
+
+const inputClassName =
+    'w-full rounded-2xl border-0 bg-[var(--neu-bg)] px-4 py-3 text-sm text-[var(--neu-ink)] placeholder:text-[var(--neu-muted)] neu-inset-sm transition focus:ring-2 focus:ring-[var(--neu-accent)] focus:outline-none';
+
+const fileInputClassName =
+    'block w-full rounded-2xl border-0 bg-[var(--neu-bg)] p-2 text-sm text-[var(--neu-muted)] neu-inset-sm file:mr-4 file:rounded-full file:border-0 file:bg-[var(--neu-bg)] file:px-4 file:py-2 file:font-semibold file:text-[var(--neu-accent)] file:neu-raised-sm file:transition';
+
+const errorTextClassName = 'text-sm font-medium text-red-600 dark:text-red-400';
+
+const primaryButtonClassName =
+    'inline-flex w-fit items-center justify-center rounded-full bg-[var(--neu-bg)] px-6 py-3 text-sm font-semibold text-[var(--neu-accent)] neu-raised transition hover:-translate-y-0.5 hover:text-[var(--neu-ink)] active:translate-y-0 active:scale-95 active:neu-inset disabled:opacity-50 disabled:hover:translate-y-0';
+
+const secondaryButtonClassName =
+    'inline-flex items-center justify-center rounded-full bg-[var(--neu-bg)] px-4 py-2 text-sm font-medium text-[var(--neu-muted)] neu-raised-sm transition hover:text-[var(--neu-accent)] active:scale-95 active:neu-inset-sm';
+
+const dangerButtonClassName =
+    'inline-flex items-center justify-center rounded-full bg-[var(--neu-bg)] px-4 py-2 text-sm font-medium text-red-600 neu-raised-sm transition hover:text-red-700 active:scale-95 active:neu-inset-sm dark:text-red-400 dark:hover:text-red-300';
+
+function initials(name: string): string {
+    return name
+        .split(' ')
+        .slice(0, 2)
+        .map((part) => part[0])
+        .join('')
+        .toUpperCase();
+}
+
+function Avatar({
+    name,
+    url,
+    alt,
+    size = 'sm',
+}: {
+    name: string;
+    url: string | null | undefined;
+    alt: string;
+    size?: 'sm' | 'md' | 'lg';
+}) {
+    const sizeClassName = {
+        sm: 'h-10 w-10 text-xs',
+        md: 'h-14 w-14 text-base',
+        lg: 'h-16 w-16 text-lg',
+    }[size];
+
+    if (url) {
+        return (
+            <div
+                className={cn(
+                    'shrink-0 rounded-full bg-[var(--neu-bg)] p-1 neu-raised-sm',
+                    sizeClassName,
+                )}
+            >
+                <img
+                    src={url}
+                    alt={alt}
+                    className="h-full w-full rounded-full object-cover"
+                />
+            </div>
+        );
+    }
+
+    return (
+        <div
+            className={cn(
+                'flex shrink-0 items-center justify-center rounded-full bg-[var(--neu-bg)] font-semibold text-[var(--neu-accent)] neu-inset-sm',
+                sizeClassName,
+            )}
+        >
+            {initials(name)}
+        </div>
+    );
+}
 
 function readInitialTab(pageUrl: string, canManage: boolean): TabId {
     const requested = new URL(pageUrl, 'http://localhost').searchParams.get(
@@ -138,40 +211,44 @@ export default function Dashboard({
         <>
             <Head title={t('dashboard.title')} />
 
-            <div className="flex min-h-screen flex-col bg-[#FDFDFC] text-[#1b1b18] dark:bg-[#0a0a0a] dark:text-[#EDEDEC]">
+            <div className="flex min-h-svh flex-col overflow-x-clip bg-[var(--neu-bg)] text-[var(--neu-ink)] transition-colors duration-300">
                 <Navbar
+                    pill
                     members={
-                        canManage && (members ?? []).length > 0 ? members : undefined
+                        canManage && (members ?? []).length > 0
+                            ? members
+                            : undefined
                     }
                 />
 
-                <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-6 px-6 py-8">
-                    <div>
-                        <h1 className="text-3xl font-semibold tracking-tight">
+                <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-8 px-4 py-8 sm:px-6">
+                    <div className="rounded-[2rem] bg-[var(--neu-bg)] p-6 neu-raised sm:p-8">
+                        <h1 className="text-3xl font-semibold tracking-tight text-[var(--neu-ink)] neu-text sm:text-4xl">
                             {t('dashboard.hello', { name: user.name })}
                         </h1>
-                        <p className="mt-1 text-[#706f6c] dark:text-[#A1A09A]">
+                        <p className="mt-2 text-sm text-[var(--neu-muted)] sm:text-base">
                             {t('dashboard.welcome')}
                         </p>
                     </div>
 
                     {flash.success && (
-                        <div className="rounded-lg border border-[#C9A227]/40 bg-[#C9A227]/10 px-4 py-3 text-sm">
+                        <div className="rounded-2xl bg-[var(--neu-bg)] px-5 py-3 text-sm font-medium text-[var(--neu-accent)] neu-inset-sm">
                             {flash.success}
                         </div>
                     )}
 
-                    <div className="flex flex-wrap gap-2 border-b border-black/10 pb-4 dark:border-white/10">
+                    <div className="flex flex-wrap gap-2 rounded-full bg-[var(--neu-bg)] p-2 neu-inset">
                         {tabs.map((tab) => (
                             <button
                                 key={tab.id}
                                 type="button"
                                 onClick={() => selectTab(tab.id)}
-                                className={`rounded-sm px-4 py-2 text-sm font-medium transition active:scale-95 ${
+                                className={cn(
+                                    'rounded-full bg-[var(--neu-bg)] px-4 py-2 text-sm font-medium transition active:scale-95 active:neu-inset-sm',
                                     activeTab === tab.id
-                                        ? 'bg-[#C9A227] text-white'
-                                        : 'border border-black/15 hover:border-[#C9A227] hover:text-[#C9A227] dark:border-white/15'
-                                }`}
+                                        ? 'text-[var(--neu-accent)] neu-inset-sm'
+                                        : 'text-[var(--neu-muted)] neu-raised-sm hover:text-[var(--neu-accent)]',
+                                )}
                             >
                                 {tab.label}
                             </button>
@@ -210,14 +287,14 @@ function FieldLabel({
     children: string;
 }) {
     return (
-        <label htmlFor={htmlFor} className="text-sm font-medium">
+        <label
+            htmlFor={htmlFor}
+            className="text-sm font-medium text-[var(--neu-muted)]"
+        >
             {children}
         </label>
     );
 }
-
-const inputClassName =
-    'rounded-sm border border-black/15 bg-white px-3 py-2 text-sm text-[#1b1b18] focus:border-[#C9A227] focus:ring-1 focus:ring-[#C9A227] focus:outline-none dark:border-white/15 dark:bg-[#161615] dark:text-[#EDEDEC]';
 
 function ProfileTab() {
     const { auth } = usePage().props;
@@ -255,27 +332,17 @@ function ProfileTab() {
     return (
         <form
             onSubmit={submit}
-            className="flex max-w-xl flex-col gap-5 rounded-xl border border-black/10 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-[#161615]"
+            className="flex max-w-xl flex-col gap-6 rounded-[2rem] bg-[var(--neu-bg)] p-6 neu-raised sm:p-8"
         >
-            <div className="flex items-center gap-4">
-                {(preview ?? user.profile_picture_url) ? (
-                    <img
-                        src={preview ?? user.profile_picture_url ?? undefined}
-                        alt={t('dashboard.photoAlt')}
-                        className="h-16 w-16 rounded-full object-cover"
-                    />
-                ) : (
-                    <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#C9A227]/15 text-lg font-semibold text-[#C9A227]">
-                        {user.name
-                            .split(' ')
-                            .slice(0, 2)
-                            .map((part) => part[0])
-                            .join('')
-                            .toUpperCase()}
-                    </div>
-                )}
+            <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
+                <Avatar
+                    name={user.name}
+                    url={preview ?? user.profile_picture_url}
+                    alt={t('dashboard.photoAlt')}
+                    size="lg"
+                />
 
-                <div className="flex flex-col gap-2">
+                <div className="flex min-w-0 flex-1 flex-col gap-2">
                     <FieldLabel htmlFor="profile_picture">
                         {t('common.profilePhoto')}
                     </FieldLabel>
@@ -284,10 +351,10 @@ function ProfileTab() {
                         type="file"
                         accept="image/jpeg,image/png,image/webp"
                         onChange={handlePictureChange}
-                        className="block w-full text-sm file:mr-4 file:rounded-sm file:border-0 file:bg-[#C9A227]/15 file:px-3 file:py-2 file:font-medium file:text-[#C9A227]"
+                        className={fileInputClassName}
                     />
                     {errors.profile_picture && (
-                        <p className="text-sm text-red-600 dark:text-red-400">
+                        <p className={errorTextClassName}>
                             {errors.profile_picture}
                         </p>
                     )}
@@ -304,9 +371,7 @@ function ProfileTab() {
                     className={inputClassName}
                 />
                 {errors.name && (
-                    <p className="text-sm text-red-600 dark:text-red-400">
-                        {errors.name}
-                    </p>
+                    <p className={errorTextClassName}>{errors.name}</p>
                 )}
             </div>
 
@@ -345,9 +410,7 @@ function ProfileTab() {
                         className={inputClassName}
                     />
                     {errors.age && (
-                        <p className="text-sm text-red-600 dark:text-red-400">
-                            {errors.age}
-                        </p>
+                        <p className={errorTextClassName}>{errors.age}</p>
                     )}
                 </div>
             </div>
@@ -362,16 +425,14 @@ function ProfileTab() {
                     className={inputClassName}
                 />
                 {errors.bio && (
-                    <p className="text-sm text-red-600 dark:text-red-400">
-                        {errors.bio}
-                    </p>
+                    <p className={errorTextClassName}>{errors.bio}</p>
                 )}
             </div>
 
             <button
                 type="submit"
                 disabled={processing}
-                className="w-fit rounded-sm bg-[#C9A227] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#b18f1f] active:scale-95 disabled:opacity-50"
+                className={primaryButtonClassName}
             >
                 {processing ? t('common.saving') : t('dashboard.saveProfile')}
             </button>
@@ -405,76 +466,81 @@ function PendingRegistrationsTab({
     }
 
     return (
-        <div className="overflow-x-auto rounded-xl border border-black/10 bg-white shadow-sm dark:border-white/10 dark:bg-[#161615]">
+        <div className="overflow-hidden rounded-[2rem] bg-[var(--neu-bg)] neu-raised">
             {registrations.length > 0 ? (
-                <table className="w-full min-w-[480px] text-left text-sm">
-                    <thead className="border-b border-black/10 text-[#706f6c] dark:border-white/10 dark:text-[#A1A09A]">
-                        <tr>
-                            <th className="px-4 py-3 font-medium">
-                                {t('dashboard.applicant')}
-                            </th>
-                            <th className="hidden px-4 py-3 font-medium md:table-cell">
-                                {t('dashboard.registered')}
-                            </th>
-                            <th className="px-4 py-3 text-right font-medium">
-                                {t('dashboard.actions')}
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-black/10 dark:divide-white/10">
-                        {registrations.map((registration) => (
-                            <tr key={registration.id}>
-                                <td className="px-4 py-3">
-                                    <div className="flex items-center gap-3">
-                                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#C9A227]/15 text-xs font-semibold text-[#C9A227]">
-                                            {registration.name
-                                                .split(' ')
-                                                .slice(0, 2)
-                                                .map((part) => part[0])
-                                                .join('')
-                                                .toUpperCase()}
-                                        </div>
-                                        <div className="min-w-0">
-                                            <p className="truncate font-medium">
-                                                {registration.name}
-                                            </p>
-                                            <p className="truncate text-xs text-[#706f6c] dark:text-[#A1A09A]">
-                                                {registration.email}
-                                            </p>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td className="hidden px-4 py-3 text-[#706f6c] md:table-cell dark:text-[#A1A09A]">
-                                    {registration.created_at?.slice(0, 10)}
-                                </td>
-                                <td className="px-4 py-3 text-right">
-                                    <div className="flex items-center justify-end gap-2">
-                                        <button
-                                            type="button"
-                                            onClick={() =>
-                                                handleApprove(registration)
-                                            }
-                                            className="rounded-sm bg-[#C9A227] px-3 py-1 text-sm font-medium text-white transition hover:bg-[#b18f1f] active:scale-95"
-                                        >
-                                            {t('dashboard.approve')}
-                                        </button>
-                                        <button
-                                            type="button"
-                                            onClick={() =>
-                                                handleReject(registration)
-                                            }
-                                            className="rounded-sm border border-black/15 px-3 py-1 text-sm text-red-600 transition hover:border-red-600 active:scale-95 dark:border-white/15 dark:text-red-400"
-                                        >
-                                            {t('dashboard.reject')}
-                                        </button>
-                                    </div>
-                                </td>
+                <div className="overflow-x-auto">
+                    <table className="w-full min-w-[600px] text-left text-sm">
+                        <thead>
+                            <tr className="text-[var(--neu-muted)]">
+                                <th className="px-6 py-4 text-xs font-semibold tracking-wider uppercase">
+                                    {t('dashboard.applicant')}
+                                </th>
+                                <th className="hidden px-6 py-4 text-xs font-semibold tracking-wider uppercase md:table-cell">
+                                    {t('dashboard.registered')}
+                                </th>
+                                <th className="px-6 py-4 text-right text-xs font-semibold tracking-wider uppercase">
+                                    {t('dashboard.actions')}
+                                </th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody className="divide-y divide-black/5 dark:divide-white/5">
+                            {registrations.map((registration) => (
+                                <tr key={registration.id}>
+                                    <td className="px-6 py-4">
+                                        <div className="flex items-center gap-3">
+                                            <Avatar
+                                                name={registration.name}
+                                                url={
+                                                    registration.profile_picture_url
+                                                }
+                                                alt={registration.name}
+                                            />
+                                            <div className="min-w-0">
+                                                <p className="truncate font-medium text-[var(--neu-ink)]">
+                                                    {registration.name}
+                                                </p>
+                                                <p className="truncate text-xs text-[var(--neu-muted)]">
+                                                    {registration.email}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td className="hidden px-6 py-4 text-[var(--neu-muted)] md:table-cell">
+                                        {registration.created_at?.slice(0, 10)}
+                                    </td>
+                                    <td className="px-6 py-4 text-right">
+                                        <div className="flex flex-wrap items-center justify-end gap-2">
+                                            <button
+                                                type="button"
+                                                onClick={() =>
+                                                    handleApprove(registration)
+                                                }
+                                                className={
+                                                    primaryButtonClassName
+                                                }
+                                            >
+                                                {t('dashboard.approve')}
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() =>
+                                                    handleReject(registration)
+                                                }
+                                                className={
+                                                    dangerButtonClassName
+                                                }
+                                            >
+                                                {t('dashboard.reject')}
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
             ) : (
-                <p className="px-4 py-10 text-center text-sm text-[#706f6c] dark:text-[#A1A09A]">
+                <p className="px-6 py-12 text-center text-sm text-[var(--neu-muted)]">
                     {t('dashboard.noPending')}
                 </p>
             )}
@@ -502,101 +568,110 @@ function MembersTab({ members, user }: { members: MemberItem[]; user: User }) {
 
     return (
         <div className="flex flex-col gap-6">
-            <div className="overflow-x-auto rounded-xl border border-black/10 bg-white shadow-sm dark:border-white/10 dark:bg-[#161615]">
+            <div className="overflow-hidden rounded-[2rem] bg-[var(--neu-bg)] neu-raised">
                 {members.length > 0 ? (
-                    <table className="w-full min-w-[480px] text-left text-sm">
-                        <thead className="border-b border-black/10 text-[#706f6c] dark:border-white/10 dark:text-[#A1A09A]">
-                            <tr>
-                                <th className="px-4 py-3 font-medium">
-                                    {t('dashboard.member')}
-                                </th>
-                                <th className="hidden px-4 py-3 font-medium sm:table-cell">
-                                    {t('common.location')}
-                                </th>
-                                <th className="px-4 py-3 font-medium">
-                                    {t('dashboard.peran')}
-                                </th>
-                                <th className="px-4 py-3 text-right font-medium">
-                                    {t('dashboard.actions')}
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-black/10 dark:divide-white/10">
-                            {members.map((member) => (
-                                <tr key={member.id}>
-                                    <td className="px-4 py-3">
-                                        <div className="flex items-center gap-3">
-                                            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#C9A227]/15 text-xs font-semibold text-[#C9A227]">
-                                                {member.name
-                                                    .split(' ')
-                                                    .slice(0, 2)
-                                                    .map((part) => part[0])
-                                                    .join('')
-                                                    .toUpperCase()}
-                                            </div>
-                                            <div className="min-w-0">
-                                                <p className="truncate font-medium">
-                                                    {member.name}
-                                                </p>
-                                                <p className="truncate text-xs text-[#706f6c] dark:text-[#A1A09A]">
-                                                    {member.email}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td className="hidden px-4 py-3 text-[#706f6c] sm:table-cell dark:text-[#A1A09A]">
-                                        {member.location ?? '-'}
-                                    </td>
-                                    <td className="px-4 py-3">
-                                        {member.id === user.id ? (
-                                            <RoleBadge role={member.role} />
-                                        ) : (
-                                            <RoleDropdown
-                                                value={member.role}
-                                                onChange={(newRole) =>
-                                                    handleRoleChange(
-                                                        member,
-                                                        newRole,
-                                                    )
-                                                }
-                                            />
-                                        )}
-                                    </td>
-                                    <td className="px-4 py-3 text-right">
-                                        <div className="flex items-center justify-end gap-2">
-                                            <button
-                                                type="button"
-                                                onClick={() =>
-                                                    setSelected(
-                                                        selected?.id ===
-                                                            member.id
-                                                            ? null
-                                                            : member,
-                                                    )
-                                                }
-                                                className="rounded-sm border border-black/15 px-3 py-1 text-sm transition hover:border-[#C9A227] hover:text-[#C9A227] active:scale-95 dark:border-white/15"
-                                            >
-                                                {selected?.id === member.id
-                                                    ? t('common.close')
-                                                    : t('common.edit')}
-                                            </button>
-                                            <button
-                                                type="button"
-                                                onClick={() =>
-                                                    handleKick(member)
-                                                }
-                                                className="rounded-sm border border-black/15 px-3 py-1 text-sm text-red-600 transition hover:border-red-600 active:scale-95 dark:border-white/15 dark:text-red-400"
-                                            >
-                                                {t('dashboard.kick')}
-                                            </button>
-                                        </div>
-                                    </td>
+                    <div className="overflow-x-auto">
+                        <table className="w-full min-w-[640px] text-left text-sm">
+                            <thead>
+                                <tr className="text-[var(--neu-muted)]">
+                                    <th className="px-6 py-4 text-xs font-semibold tracking-wider uppercase">
+                                        {t('dashboard.member')}
+                                    </th>
+                                    <th className="hidden px-6 py-4 text-xs font-semibold tracking-wider uppercase sm:table-cell">
+                                        {t('common.location')}
+                                    </th>
+                                    <th className="px-6 py-4 text-xs font-semibold tracking-wider uppercase">
+                                        {t('dashboard.peran')}
+                                    </th>
+                                    <th className="px-6 py-4 text-right text-xs font-semibold tracking-wider uppercase">
+                                        {t('dashboard.actions')}
+                                    </th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody className="divide-y divide-black/5 dark:divide-white/5">
+                                {members.map((member) => (
+                                    <tr key={member.id}>
+                                        <td className="px-6 py-4">
+                                            <div className="flex items-center gap-3">
+                                                <Avatar
+                                                    name={member.name}
+                                                    url={
+                                                        member.profile_picture_url
+                                                    }
+                                                    alt={member.name}
+                                                />
+                                                <div className="min-w-0">
+                                                    <p className="truncate font-medium text-[var(--neu-ink)]">
+                                                        {member.name}
+                                                    </p>
+                                                    <p className="truncate text-xs text-[var(--neu-muted)]">
+                                                        {member.email}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td className="hidden px-6 py-4 text-[var(--neu-muted)] sm:table-cell">
+                                            {member.location ?? '-'}
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            {member.id === user.id ? (
+                                                <RoleBadge
+                                                    role={member.role}
+                                                    variant="neumorphic"
+                                                />
+                                            ) : (
+                                                <RoleDropdown
+                                                    value={member.role}
+                                                    onChange={(newRole) =>
+                                                        handleRoleChange(
+                                                            member,
+                                                            newRole,
+                                                        )
+                                                    }
+                                                    className="border-0! bg-[var(--neu-bg)]! text-[var(--neu-accent)]! neu-inset-sm"
+                                                />
+                                            )}
+                                        </td>
+                                        <td className="px-6 py-4 text-right">
+                                            <div className="flex flex-wrap items-center justify-end gap-2">
+                                                <button
+                                                    type="button"
+                                                    onClick={() =>
+                                                        setSelected(
+                                                            selected?.id ===
+                                                                member.id
+                                                                ? null
+                                                                : member,
+                                                        )
+                                                    }
+                                                    className={
+                                                        secondaryButtonClassName
+                                                    }
+                                                >
+                                                    {selected?.id === member.id
+                                                        ? t('common.close')
+                                                        : t('common.edit')}
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={() =>
+                                                        handleKick(member)
+                                                    }
+                                                    className={
+                                                        dangerButtonClassName
+                                                    }
+                                                >
+                                                    {t('dashboard.kick')}
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
                 ) : (
-                    <p className="px-4 py-10 text-center text-sm text-[#706f6c] dark:text-[#A1A09A]">
+                    <p className="px-6 py-12 text-center text-sm text-[var(--neu-muted)]">
                         {t('dashboard.noMembers')}
                     </p>
                 )}
@@ -639,13 +714,13 @@ function MemberEditForm({ member }: { member: MemberItem }) {
     return (
         <form
             onSubmit={submit}
-            className="rounded-xl border border-black/10 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-[#161615]"
+            className="rounded-[2rem] bg-[var(--neu-bg)] p-6 neu-raised sm:p-8"
         >
             <div>
-                <h2 className="text-lg font-semibold tracking-tight">
+                <h2 className="text-xl font-semibold tracking-tight text-[var(--neu-ink)] neu-text">
                     {t('dashboard.editMember', { name: member.name })}
                 </h2>
-                <p className="mt-0.5 text-sm text-[#706f6c] dark:text-[#A1A09A]">
+                <p className="mt-1 text-sm text-[var(--neu-muted)]">
                     {t('dashboard.editMemberHint')}
                 </p>
             </div>
@@ -660,22 +735,20 @@ function MemberEditForm({ member }: { member: MemberItem }) {
                         rows={20}
                         value={data.bio ?? ''}
                         onChange={(event) => setData('bio', event.target.value)}
-                        className={`${inputClassName} leading-7`}
+                        className={cn(inputClassName, 'leading-7')}
                     />
                     {errors.bio && (
-                        <p className="text-sm text-red-600 dark:text-red-400">
-                            {errors.bio}
-                        </p>
+                        <p className={errorTextClassName}>{errors.bio}</p>
                     )}
                 </div>
 
-                <aside className="h-fit w-full">
-                    <div className="overflow-hidden rounded-lg border border-black/15 dark:border-white/15">
-                        <div className="border-b border-black/15 px-4 py-2 text-center text-sm font-medium dark:border-white/15">
-                            {t('member.info')}
-                        </div>
+                <aside className="h-fit w-full rounded-[2rem] bg-[var(--neu-bg)] p-4 neu-inset sm:p-5">
+                    <h3 className="mb-4 text-center text-sm font-semibold text-[var(--neu-muted)]">
+                        {t('member.info')}
+                    </h3>
 
-                        <div className="aspect-square w-full overflow-hidden bg-[#C9A227]/10">
+                    <div className="overflow-hidden rounded-[1.6rem] bg-[var(--neu-bg)] neu-raised-sm">
+                        <div className="aspect-square w-full overflow-hidden bg-[var(--neu-bg)] neu-inset">
                             {(preview ?? member.profile_picture_url) ? (
                                 <img
                                     src={
@@ -687,13 +760,8 @@ function MemberEditForm({ member }: { member: MemberItem }) {
                                     className="h-full w-full object-cover"
                                 />
                             ) : (
-                                <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-[#C9A227]/20 to-[#C9A227]/5 text-5xl font-semibold text-[#C9A227]">
-                                    {member.name
-                                        .split(' ')
-                                        .slice(0, 2)
-                                        .map((part) => part[0])
-                                        .join('')
-                                        .toUpperCase()}
+                                <div className="flex h-full w-full items-center justify-center text-5xl font-semibold text-[var(--neu-accent)]">
+                                    {initials(member.name)}
                                 </div>
                             )}
                         </div>
@@ -708,10 +776,10 @@ function MemberEditForm({ member }: { member: MemberItem }) {
                                     type="file"
                                     accept="image/jpeg,image/png,image/webp"
                                     onChange={handlePictureChange}
-                                    className="block w-full text-sm file:mr-4 file:rounded-sm file:border-0 file:bg-[#C9A227]/15 file:px-3 file:py-2 file:font-medium file:text-[#C9A227]"
+                                    className={fileInputClassName}
                                 />
                                 {errors.profile_picture && (
-                                    <p className="text-sm text-red-600 dark:text-red-400">
+                                    <p className={errorTextClassName}>
                                         {errors.profile_picture}
                                     </p>
                                 )}
@@ -731,7 +799,7 @@ function MemberEditForm({ member }: { member: MemberItem }) {
                                     className={inputClassName}
                                 />
                                 {errors.name && (
-                                    <p className="text-sm text-red-600 dark:text-red-400">
+                                    <p className={errorTextClassName}>
                                         {errors.name}
                                     </p>
                                 )}
@@ -758,7 +826,7 @@ function MemberEditForm({ member }: { member: MemberItem }) {
                                     className={inputClassName}
                                 />
                                 {errors.age && (
-                                    <p className="text-sm text-red-600 dark:text-red-400">
+                                    <p className={errorTextClassName}>
                                         {errors.age}
                                     </p>
                                 )}
@@ -786,7 +854,7 @@ function MemberEditForm({ member }: { member: MemberItem }) {
             <button
                 type="submit"
                 disabled={processing}
-                className="mt-6 w-fit rounded-sm bg-[#C9A227] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#b18f1f] active:scale-95 disabled:opacity-50"
+                className={cn(primaryButtonClassName, 'mt-6')}
             >
                 {processing ? t('common.saving') : t('dashboard.saveChanges')}
             </button>
@@ -828,13 +896,13 @@ function SettingsTab({
         <div className="flex max-w-3xl flex-col gap-6">
             <form
                 onSubmit={submit}
-                className="flex flex-col gap-5 rounded-xl border border-black/10 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-[#161615]"
+                className="flex flex-col gap-5 rounded-[2rem] bg-[var(--neu-bg)] p-6 neu-raised sm:p-8"
             >
                 <div>
-                    <h2 className="text-lg font-semibold tracking-tight">
+                    <h2 className="text-xl font-semibold tracking-tight text-[var(--neu-ink)] neu-text">
                         {t('dashboard.settingsTitle')}
                     </h2>
-                    <p className="mt-0.5 text-sm text-[#706f6c] dark:text-[#A1A09A]">
+                    <p className="mt-1 text-sm text-[var(--neu-muted)]">
                         {t('dashboard.settingsHint')}
                     </p>
                 </div>
@@ -853,9 +921,7 @@ function SettingsTab({
                         className={inputClassName}
                     />
                     {errors.site_name && (
-                        <p className="text-sm text-red-600 dark:text-red-400">
-                            {errors.site_name}
-                        </p>
+                        <p className={errorTextClassName}>{errors.site_name}</p>
                     )}
                 </div>
 
@@ -873,7 +939,7 @@ function SettingsTab({
                         className={inputClassName}
                     />
                     {errors.hero_title && (
-                        <p className="text-sm text-red-600 dark:text-red-400">
+                        <p className={errorTextClassName}>
                             {errors.hero_title}
                         </p>
                     )}
@@ -893,7 +959,7 @@ function SettingsTab({
                         className={inputClassName}
                     />
                     {errors.hero_subtitle && (
-                        <p className="text-sm text-red-600 dark:text-red-400">
+                        <p className={errorTextClassName}>
                             {errors.hero_subtitle}
                         </p>
                     )}
@@ -908,18 +974,16 @@ function SettingsTab({
                         type="file"
                         accept="image/svg+xml,image/jpeg,image/png,image/webp"
                         onChange={handleLogoChange}
-                        className="block w-full text-sm file:mr-4 file:rounded-sm file:border-0 file:bg-[#C9A227]/15 file:px-3 file:py-2 file:font-medium file:text-[#C9A227]"
+                        className={fileInputClassName}
                     />
                     {errors.logo && (
-                        <p className="text-sm text-red-600 dark:text-red-400">
-                            {errors.logo}
-                        </p>
+                        <p className={errorTextClassName}>{errors.logo}</p>
                     )}
                     {preview && (
                         <img
                             src={preview}
                             alt={t('dashboard.logoPreview')}
-                            className="mt-1 h-12 w-auto self-start rounded-sm object-contain"
+                            className="mt-2 h-14 w-auto self-start rounded-2xl bg-[var(--neu-bg)] object-contain p-2 neu-inset-sm"
                         />
                     )}
                 </div>
@@ -927,7 +991,7 @@ function SettingsTab({
                 <button
                     type="submit"
                     disabled={processing}
-                    className="w-fit rounded-sm bg-[#C9A227] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#b18f1f] active:scale-95 disabled:opacity-50"
+                    className={primaryButtonClassName}
                 >
                     {processing
                         ? t('common.saving')

@@ -16,8 +16,10 @@ const themeLabelKeys: Record<Theme, keyof Dictionary> = {
 
 export default function ThemeToggle({
     overlay = false,
+    neumorphic = true,
 }: {
     overlay?: boolean;
+    neumorphic?: boolean;
 }) {
     const { theme, setTheme } = useTheme();
     const { t } = useLanguage();
@@ -36,6 +38,8 @@ export default function ThemeToggle({
                 'rounded-sm border border-black/15 p-2 text-[#1b1b18] transition hover:border-[#C9A227] hover:text-[#C9A227] active:scale-95 dark:border-white/15 dark:text-[#EDEDEC]',
                 overlay &&
                     'border-white/15 text-white dark:border-white/15 dark:text-white',
+                neumorphic &&
+                    'rounded-full border-0 bg-[var(--neu-bg)] p-2.5 text-[var(--neu-muted)] neu-raised-sm hover:text-[var(--neu-accent)] active:neu-inset-sm dark:border-0 dark:text-[var(--neu-muted)]',
             )}
         >
             {theme === 'dark' ? (

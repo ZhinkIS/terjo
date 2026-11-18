@@ -45,15 +45,15 @@ export default function Pending() {
         <>
             <Head title={`${t('pending.head')} · ${site.name}`} />
 
-            <div className="flex min-h-screen flex-col bg-[#FDFDFC] text-[#1b1b18] dark:bg-[#0a0a0a] dark:text-[#EDEDEC]">
-                <Navbar />
+            <div className="flex min-h-svh flex-col bg-[var(--neu-bg)] text-[var(--neu-ink)] transition-colors duration-300">
+                <Navbar pill />
 
                 <main className="flex flex-1 items-center justify-center px-6 py-16">
-                    <div className="flex w-full max-w-md flex-col items-center gap-5 rounded-2xl border border-black/10 bg-white p-10 text-center shadow-sm dark:border-white/10 dark:bg-[#161615]">
-                        <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[#C9A227]/15">
+                    <div className="flex w-full max-w-md flex-col items-center gap-5 rounded-[2rem] bg-[var(--neu-bg)] p-8 text-center neu-raised sm:p-10">
+                        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[var(--neu-bg)] text-[var(--neu-accent)] neu-raised-sm">
                             <svg
-                                width={24}
-                                height={24}
+                                width={26}
+                                height={26}
                                 viewBox="0 0 24 24"
                                 fill="none"
                                 stroke="currentColor"
@@ -61,7 +61,6 @@ export default function Pending() {
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
                                 aria-hidden="true"
-                                className="text-[#C9A227]"
                             >
                                 <rect
                                     width="18"
@@ -76,19 +75,23 @@ export default function Pending() {
                         </div>
 
                         <div>
-                            <h1 className="text-2xl font-semibold tracking-tight">
+                            <h1 className="text-2xl font-black tracking-tight text-[var(--neu-ink)] uppercase neu-text">
                                 {t('pending.title')}
                             </h1>
-                            <p className="mt-3 text-sm leading-relaxed text-[#706f6c] dark:text-[#A1A09A]">
+                            <p className="mt-3 text-sm leading-relaxed text-[var(--neu-muted)]">
                                 {t('pending.description')}
                             </p>
                         </div>
 
-                        <span className="inline-flex rounded-full bg-[#C9A227]/15 px-3 py-1 text-xs font-medium text-[#C9A227]">
+                        <span className="inline-flex rounded-full bg-[var(--neu-bg)] px-4 py-1.5 text-xs font-bold tracking-wide text-[var(--neu-accent)] neu-inset">
                             {t('pending.status')}
                         </span>
 
-                        <p className="text-xs text-[#706f6c] dark:text-[#A1A09A]">
+                        <p className="inline-flex items-center gap-2 text-xs text-[var(--neu-muted)]">
+                            <span
+                                aria-hidden="true"
+                                className="h-1.5 w-1.5 animate-pulse rounded-full bg-[var(--neu-accent)]"
+                            />
                             {t('pending.checking')}
                         </p>
                     </div>

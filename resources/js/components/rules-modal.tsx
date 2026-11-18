@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 
 import { useLanguage } from '@/i18n/language-provider';
+import { cn } from '@/lib/utils';
 
 const RULES = [
     'Leader always on top 👑',
@@ -23,12 +24,19 @@ const RULES = [
     'If you do something bad because its not on the list of rules, it will still count as one 📝 (Depends on the situation)',
 ];
 
+type RulesModalVariant = 'default' | 'neumorphic';
+
 type RulesModalProps = {
     open: boolean;
     onClose: () => void;
+    variant?: RulesModalVariant;
 };
 
-export default function RulesModal({ open, onClose }: RulesModalProps) {
+export default function RulesModal({
+    open,
+    onClose,
+    variant = 'neumorphic',
+}: RulesModalProps) {
     const { t } = useLanguage();
 
     useEffect(() => {
@@ -64,9 +72,20 @@ export default function RulesModal({ open, onClose }: RulesModalProps) {
                 role="dialog"
                 aria-modal="true"
                 aria-labelledby="rules-modal-title"
-                className="relative flex max-h-[85vh] w-full max-w-lg flex-col overflow-hidden rounded-xl border-2 border-[#C9A227] bg-white shadow-2xl dark:bg-[#161615]"
+                className={cn(
+                    'relative flex max-h-[85vh] w-full max-w-lg flex-col overflow-hidden rounded-xl border-2 border-[#C9A227] bg-white dark:bg-[#161615]',
+                    variant === 'neumorphic'
+                        ? 'rounded-[2rem] border-0 bg-[var(--neu-bg)] text-[var(--neu-ink)] neu-raised dark:bg-[var(--neu-bg)]'
+                        : 'shadow-2xl',
+                )}
             >
-                <div className="flex shrink-0 items-center justify-between gap-4 border-b border-black/10 px-5 py-4 dark:border-white/10">
+                <div
+                    className={cn(
+                        'flex shrink-0 items-center justify-between gap-4 border-b border-black/10 px-5 py-4 dark:border-white/10',
+                        variant === 'neumorphic' &&
+                            'border-black/5 dark:border-white/5',
+                    )}
+                >
                     <h2
                         id="rules-modal-title"
                         className="text-lg font-semibold tracking-tight"
@@ -77,7 +96,11 @@ export default function RulesModal({ open, onClose }: RulesModalProps) {
                         type="button"
                         onClick={onClose}
                         aria-label={t('rules.close')}
-                        className="rounded-sm border border-black/15 p-1.5 text-[#1b1b18] transition hover:border-[#C9A227] hover:text-[#C9A227] active:scale-95 dark:border-white/15 dark:text-[#EDEDEC]"
+                        className={cn(
+                            'rounded-sm border border-black/15 p-1.5 text-[#1b1b18] transition hover:border-[#C9A227] hover:text-[#C9A227] active:scale-95 dark:border-white/15 dark:text-[#EDEDEC]',
+                            variant === 'neumorphic' &&
+                                'rounded-full border-0 bg-[var(--neu-bg)] p-2.5 text-[var(--neu-muted)] neu-raised-sm hover:text-[var(--neu-accent)] active:neu-inset-sm dark:border-0 dark:text-[var(--neu-muted)]',
+                        )}
                     >
                         <svg
                             width={16}
@@ -96,13 +119,30 @@ export default function RulesModal({ open, onClose }: RulesModalProps) {
                 </div>
 
                 <div className="flex-1 overflow-y-auto px-5 py-4">
-                    <ul className="divide-y divide-black/10 rounded-sm border border-black/10 bg-[#FDFDFC] dark:divide-white/10 dark:border-white/10 dark:bg-[#0a0a0a]">
+                    <ul
+                        className={cn(
+                            'divide-y divide-black/10 rounded-sm border border-black/10 bg-[#FDFDFC] dark:divide-white/10 dark:border-white/10 dark:bg-[#0a0a0a]',
+                            variant === 'neumorphic'
+                                ? 'divide-black/5 rounded-[1.5rem] border-0 bg-[var(--neu-bg)] p-1 neu-inset dark:divide-white/5 dark:bg-[var(--neu-bg)]'
+                                : undefined,
+                        )}
+                    >
                         {RULES.map((rule, index) => (
                             <li
                                 key={rule}
-                                className="flex items-start gap-3 px-3 py-3 text-sm leading-relaxed text-[#1b1b18] dark:text-[#EDEDEC]"
+                                className={cn(
+                                    'flex items-start gap-3 px-3 py-3 text-sm leading-relaxed text-[#1b1b18] dark:text-[#EDEDEC]',
+                                    variant === 'neumorphic' &&
+                                        'text-[var(--neu-ink)] dark:text-[var(--neu-ink)]',
+                                )}
                             >
-                                <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#C9A227]/15 text-xs font-semibold text-[#C9A227]">
+                                <span
+                                    className={cn(
+                                        'mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#C9A227]/15 text-xs font-semibold text-[#C9A227]',
+                                        variant === 'neumorphic' &&
+                                            'bg-[var(--neu-bg)] text-[var(--neu-accent)] neu-inset-sm',
+                                    )}
+                                >
                                     {index + 1}
                                 </span>
                                 <span>{rule}</span>

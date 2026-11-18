@@ -10,6 +10,94 @@
         'Instrument Sans', ui-sans-serif, system-ui, sans-serif,
         'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
         'Noto Color Emoji';
+    --animate-float: float 6s ease-in-out infinite;
+    --animate-marquee: marquee 26s linear infinite;
+}
+
+@keyframes float {
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-18px);
+    }
+}
+
+@keyframes marquee {
+    from {
+        transform: translateX(0);
+    }
+
+    to {
+        transform: translateX(-50%);
+    }
+}
+
+:root {
+    --neu-bg: #e8ebf2;
+    --neu-ink: #404958;
+    --neu-muted: #737d8f;
+    --neu-accent: #8a6d12;
+    --neu-shadow-dark: rgba(163, 177, 198, 0.55);
+    --neu-shadow-light: rgba(255, 255, 255, 0.92);
+    --scratch-cover: rgba(232, 235, 242, 0.9);
+    --scratch-ink: #404958;
+}
+
+.dark {
+    --neu-bg: #1a1e26;
+    --neu-ink: #e5e9f0;
+    --neu-muted: #98a3b5;
+    --neu-accent: #d8b84a;
+    --neu-shadow-dark: rgba(0, 0, 0, 0.68);
+    --neu-shadow-light: rgba(255, 255, 255, 0.055);
+    --scratch-cover: rgba(26, 30, 38, 0.9);
+    --scratch-ink: #e5e9f0;
+}
+
+@utility neu-raised {
+    box-shadow:
+        8px 8px 16px var(--neu-shadow-dark),
+        -8px -8px 16px var(--neu-shadow-light);
+}
+
+@utility neu-raised-sm {
+    box-shadow:
+        4px 4px 8px var(--neu-shadow-dark),
+        -4px -4px 8px var(--neu-shadow-light);
+}
+
+@utility neu-raised-lg {
+    box-shadow:
+        12px 12px 24px var(--neu-shadow-dark),
+        -12px -12px 24px var(--neu-shadow-light);
+}
+
+@utility neu-inset {
+    box-shadow:
+        inset 6px 6px 12px var(--neu-shadow-dark),
+        inset -6px -6px 12px var(--neu-shadow-light);
+}
+
+@utility neu-inset-sm {
+    box-shadow:
+        inset 3px 3px 6px var(--neu-shadow-dark),
+        inset -3px -3px 6px var(--neu-shadow-light);
+}
+
+@utility neu-text {
+    text-shadow:
+        1px 1px 1px var(--neu-shadow-light),
+        -1px -1px 1px var(--neu-shadow-dark);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .animate-float,
+    .animate-marquee {
+        animation: none;
+    }
 }
 
 @layer base {
@@ -19,6 +107,20 @@
 
     html.dark {
         color-scheme: dark;
+    }
+
+    body {
+        background-color: var(--neu-bg);
+        color: var(--neu-ink);
+        -webkit-font-smoothing: antialiased;
+    }
+
+    ::selection {
+        background-color: color-mix(
+            in oklab,
+            var(--neu-accent) 25%,
+            transparent
+        );
     }
 }
 

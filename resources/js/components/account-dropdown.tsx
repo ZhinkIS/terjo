@@ -11,8 +11,10 @@ const menuItemClassName =
 
 export default function AccountDropdown({
     overlay = false,
+    neumorphic = true,
 }: {
     overlay?: boolean;
+    neumorphic?: boolean;
 }) {
     const { t, language, setLanguage } = useLanguage();
 
@@ -51,6 +53,8 @@ export default function AccountDropdown({
                     'flex items-center gap-2 rounded-sm border border-black/15 py-1 pr-3 pl-1 text-sm text-[#1b1b18] transition hover:border-[#C9A227] hover:text-[#C9A227] active:scale-[0.98] dark:border-white/15 dark:text-[#EDEDEC]',
                     overlay &&
                         'border-white/15 text-white dark:border-white/15 dark:text-white',
+                    neumorphic &&
+                        'rounded-full border-0 bg-[var(--neu-bg)] text-[var(--neu-ink)] neu-raised-sm hover:text-[var(--neu-accent)] active:neu-inset-sm dark:border-0 dark:text-[var(--neu-ink)]',
                 )}
             >
                 <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#C9A227]/15 text-[#C9A227]">
@@ -90,7 +94,12 @@ export default function AccountDropdown({
             {open ? (
                 <div
                     role="menu"
-                    className="absolute right-0 z-30 mt-2 w-56 rounded-xl border border-black/10 bg-white p-2 shadow-lg dark:border-white/10 dark:bg-[#161615]"
+                    className={cn(
+                        'absolute right-0 z-30 mt-2 w-56 rounded-xl border border-black/10 bg-white p-2 dark:border-white/10 dark:bg-[#161615]',
+                        neumorphic
+                            ? 'rounded-[1.5rem] border-0 bg-[var(--neu-bg)] text-[var(--neu-ink)] neu-raised dark:bg-[var(--neu-bg)]'
+                            : 'shadow-lg',
+                    )}
                 >
                     <p className="px-3 pt-1 pb-1.5 text-xs font-semibold tracking-wide text-[#706f6c] dark:text-[#A1A09A]">
                         {t('nav.account')}
@@ -101,7 +110,11 @@ export default function AccountDropdown({
                             href={login.url()}
                             onClick={() => setOpen(false)}
                             role="menuitem"
-                            className="rounded-md bg-[#C9A227] px-3 py-2.5 text-center text-sm font-semibold text-white transition hover:bg-[#b18f1f] active:scale-[0.98]"
+                            className={cn(
+                                'rounded-md bg-[#C9A227] px-3 py-2.5 text-center text-sm font-semibold text-white transition hover:bg-[#b18f1f] active:scale-[0.98]',
+                                neumorphic &&
+                                    'rounded-full bg-[var(--neu-bg)] text-[var(--neu-accent)] neu-raised-sm hover:bg-[var(--neu-bg)] active:neu-inset-sm',
+                            )}
                         >
                             {t('nav.signIn')}
                         </Link>
@@ -113,6 +126,7 @@ export default function AccountDropdown({
                             className={cn(
                                 menuItemClassName,
                                 'justify-center border border-black/15 dark:border-white/15',
+                                neumorphic && 'border-0',
                             )}
                         >
                             {t('nav.signUp')}

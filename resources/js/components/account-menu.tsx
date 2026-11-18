@@ -23,9 +23,11 @@ function initials(name: string): string {
 export default function AccountMenu({
     user,
     overlay = false,
+    neumorphic = true,
 }: {
     user: User;
     overlay?: boolean;
+    neumorphic?: boolean;
 }) {
     const { t, language, setLanguage } = useLanguage();
 
@@ -66,6 +68,8 @@ export default function AccountMenu({
                     'flex items-center gap-2 rounded-sm border border-black/15 py-1 pr-3 pl-1 text-sm text-[#1b1b18] transition hover:border-[#C9A227] hover:text-[#C9A227] active:scale-[0.98] dark:border-white/15 dark:text-[#EDEDEC]',
                     overlay &&
                         'border-white/15 text-white dark:border-white/15 dark:text-white',
+                    neumorphic &&
+                        'rounded-full border-0 bg-[var(--neu-bg)] text-[var(--neu-ink)] neu-raised-sm hover:text-[var(--neu-accent)] active:neu-inset-sm dark:border-0 dark:text-[var(--neu-ink)]',
                 )}
             >
                 {user.profile_picture_url ? (
@@ -102,7 +106,12 @@ export default function AccountMenu({
             {open ? (
                 <div
                     role="menu"
-                    className="absolute right-0 z-20 mt-2 w-56 rounded-xl border border-black/10 bg-white p-2 shadow-lg dark:border-white/10 dark:bg-[#161615]"
+                    className={cn(
+                        'absolute right-0 z-20 mt-2 w-56 rounded-xl border border-black/10 bg-white p-2 dark:border-white/10 dark:bg-[#161615]',
+                        neumorphic
+                            ? 'rounded-[1.5rem] border-0 bg-[var(--neu-bg)] text-[var(--neu-ink)] neu-raised dark:bg-[var(--neu-bg)]'
+                            : 'shadow-lg',
+                    )}
                 >
                     {isPending ? null : (
                         <>

@@ -5,6 +5,7 @@ import { useState } from 'react';
 import type { ChangeEvent, FormEvent } from 'react';
 
 import { useLanguage } from '@/i18n/language-provider';
+import { cn } from '@/lib/utils';
 import { destroy, reorder, store, update } from '@/routes/admin/slideshows';
 
 type SlideshowItem = {
@@ -119,24 +120,24 @@ export default function SlideshowManager({
     }
 
     return (
-        <div className="flex flex-col gap-5 rounded-xl border border-black/10 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-[#161615]">
+        <div className="flex flex-col gap-6 rounded-[2.5rem] bg-[var(--neu-bg)] p-5 neu-raised sm:p-6">
             <div>
-                <h2 className="text-lg font-semibold tracking-tight">
+                <h2 className="text-lg font-semibold tracking-tight text-[var(--neu-ink)] neu-text">
                     {t('slideshow.manage')}
                 </h2>
-                <p className="mt-0.5 text-sm text-[#706f6c] dark:text-[#A1A09A]">
+                <p className="mt-1 text-sm text-[var(--neu-muted)]">
                     {t('slideshow.manageHint')}
                 </p>
             </div>
 
             <form
                 onSubmit={upload}
-                className="flex flex-col gap-3 rounded-lg border border-black/10 p-4 sm:flex-row sm:items-end dark:border-white/10"
+                className="flex flex-col gap-4 rounded-[2rem] bg-[var(--neu-bg)] p-4 neu-inset sm:flex-row sm:items-end"
             >
                 <div className="flex min-w-0 flex-1 flex-col gap-2">
                     <label
                         htmlFor="slideshow-image"
-                        className="text-sm font-medium"
+                        className="text-sm font-medium text-[var(--neu-ink)]"
                     >
                         {t('slideshow.photo')}
                     </label>
@@ -145,16 +146,16 @@ export default function SlideshowManager({
                         type="file"
                         accept="image/jpeg,image/png,image/webp"
                         onChange={handleFileChange}
-                        className="block w-full text-sm file:mr-4 file:rounded-sm file:border-0 file:bg-[#C9A227]/15 file:px-3 file:py-2 file:font-medium file:text-[#C9A227]"
+                        className="block w-full cursor-pointer rounded-2xl bg-[var(--neu-bg)] p-1 text-sm text-[var(--neu-muted)] neu-inset-sm file:mr-3 file:cursor-pointer file:rounded-full file:border-0 file:bg-[var(--neu-bg)] file:px-4 file:py-2 file:text-sm file:font-semibold file:text-[var(--neu-accent)] file:neu-raised-sm file:transition file:active:scale-95 file:active:neu-inset-sm"
                     />
                 </div>
 
-                <label className="flex items-center gap-2 text-sm text-[#706f6c] sm:pb-2 dark:text-[#A1A09A]">
+                <label className="flex items-center gap-2 text-sm text-[var(--neu-muted)] sm:pb-2">
                     <input
                         type="checkbox"
                         checked={active}
                         onChange={(event) => setActive(event.target.checked)}
-                        className="accent-[#C9A227]"
+                        className="h-4 w-4 rounded-md accent-[var(--neu-accent)]"
                     />
                     {t('slideshow.showOnHome')}
                 </label>
@@ -162,20 +163,20 @@ export default function SlideshowManager({
                 <button
                     type="submit"
                     disabled={!file || uploading}
-                    className="rounded-sm bg-[#C9A227] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#b18f1f] active:scale-95 disabled:opacity-50"
+                    className="inline-flex items-center justify-center rounded-full bg-[var(--neu-bg)] px-5 py-2.5 text-sm font-semibold text-[var(--neu-accent)] neu-raised-sm transition hover:-translate-y-0.5 hover:neu-raised active:translate-y-0 active:scale-95 active:neu-inset-sm disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0"
                 >
                     {uploading ? t('common.uploading') : t('slideshow.upload')}
                 </button>
             </form>
 
             {ordered.length > 0 ? (
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
                     {ordered.map((slideshow, index) => (
                         <div
                             key={slideshow.id}
-                            className="flex flex-col overflow-hidden rounded-lg border border-black/10 dark:border-white/10"
+                            className="flex flex-col overflow-hidden rounded-[2rem] bg-[var(--neu-bg)] p-3 neu-raised transition hover:neu-raised-lg"
                         >
-                            <div className="relative aspect-video w-full bg-[#C9A227]/10">
+                            <div className="relative aspect-video w-full overflow-hidden rounded-[1.5rem] bg-[var(--neu-bg)] neu-inset">
                                 <img
                                     src={slideshow.image_url}
                                     alt=""
@@ -187,27 +188,28 @@ export default function SlideshowManager({
                                 />
                             </div>
 
-                            <div className="flex flex-col gap-3 p-4">
+                            <div className="flex flex-col gap-3 p-2 pt-4 sm:p-3 sm:pt-4">
                                 <div className="flex items-center justify-between gap-2">
                                     <span
-                                        className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${
+                                        className={cn(
+                                            'inline-flex rounded-full bg-[var(--neu-bg)] px-3 py-1 text-xs font-semibold neu-inset-sm',
                                             slideshow.is_active
-                                                ? 'bg-[#C9A227]/15 text-[#C9A227]'
-                                                : 'bg-black/5 text-[#706f6c] dark:bg-white/10 dark:text-[#A1A09A]'
-                                        }`}
+                                                ? 'text-[var(--neu-accent)]'
+                                                : 'text-[var(--neu-muted)]',
+                                        )}
                                     >
                                         {slideshow.is_active
                                             ? t('common.active')
                                             : t('common.inactive')}
                                     </span>
 
-                                    <div className="flex items-center gap-1">
+                                    <div className="flex items-center gap-2">
                                         <button
                                             type="button"
                                             onClick={() => move(slideshow, -1)}
                                             disabled={index === 0}
                                             aria-label={t('slideshow.moveUp')}
-                                            className="rounded-sm border border-black/15 p-1.5 transition hover:border-[#C9A227] hover:text-[#C9A227] active:scale-95 disabled:opacity-30 dark:border-white/15"
+                                            className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--neu-bg)] text-[var(--neu-muted)] neu-raised-sm transition hover:text-[var(--neu-accent)] active:scale-95 active:neu-inset-sm disabled:opacity-30"
                                         >
                                             <svg
                                                 width={14}
@@ -230,7 +232,7 @@ export default function SlideshowManager({
                                                 index === ordered.length - 1
                                             }
                                             aria-label={t('slideshow.moveDown')}
-                                            className="rounded-sm border border-black/15 p-1.5 transition hover:border-[#C9A227] hover:text-[#C9A227] active:scale-95 disabled:opacity-30 dark:border-white/15"
+                                            className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--neu-bg)] text-[var(--neu-muted)] neu-raised-sm transition hover:text-[var(--neu-accent)] active:scale-95 active:neu-inset-sm disabled:opacity-30"
                                         >
                                             <svg
                                                 width={14}
@@ -253,7 +255,7 @@ export default function SlideshowManager({
                                     <button
                                         type="button"
                                         onClick={() => toggle(slideshow)}
-                                        className="rounded-sm border border-black/15 px-3 py-1 text-sm transition hover:border-[#C9A227] hover:text-[#C9A227] active:scale-95 dark:border-white/15"
+                                        className="rounded-full bg-[var(--neu-bg)] px-4 py-2 text-sm font-medium text-[var(--neu-accent)] neu-raised-sm transition hover:neu-raised active:scale-95 active:neu-inset-sm"
                                     >
                                         {slideshow.is_active
                                             ? t('common.deactivate')
@@ -262,7 +264,7 @@ export default function SlideshowManager({
                                     <button
                                         type="button"
                                         onClick={() => remove(slideshow)}
-                                        className="rounded-sm border border-black/15 px-3 py-1 text-sm text-red-600 transition hover:border-red-600 active:scale-95 dark:border-white/15 dark:text-red-400"
+                                        className="rounded-full bg-[var(--neu-bg)] px-4 py-2 text-sm font-medium text-red-600 neu-raised-sm transition hover:neu-raised active:scale-95 active:neu-inset-sm dark:text-red-400"
                                     >
                                         {t('common.delete')}
                                     </button>
@@ -272,7 +274,7 @@ export default function SlideshowManager({
                     ))}
                 </div>
             ) : (
-                <p className="rounded-lg border border-black/10 px-4 py-10 text-center text-sm text-[#706f6c] dark:border-white/10 dark:text-[#A1A09A]">
+                <p className="rounded-[2rem] bg-[var(--neu-bg)] px-6 py-10 text-center text-sm text-[var(--neu-muted)] neu-inset">
                     {t('slideshow.empty')}
                 </p>
             )}

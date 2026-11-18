@@ -21,6 +21,7 @@ type SearchModalProps = {
     open: boolean;
     onClose: () => void;
     members: SearchableMember[];
+    neumorphic?: boolean;
 };
 
 function initials(name: string): string {
@@ -36,6 +37,7 @@ export default function SearchModal({
     open,
     onClose,
     members,
+    neumorphic = true,
 }: SearchModalProps) {
     const { t } = useLanguage();
 
@@ -107,13 +109,22 @@ export default function SearchModal({
                 aria-modal="true"
                 aria-labelledby="search-modal-title"
                 className={cn(
-                    'relative flex max-h-[80svh] w-full max-w-lg flex-col overflow-hidden rounded-2xl border border-black/10 bg-white shadow-2xl transition-all duration-200 dark:border-white/10 dark:bg-[#161615]',
+                    'relative flex max-h-[80svh] w-full max-w-lg flex-col overflow-hidden rounded-2xl border border-black/10 bg-white transition-all duration-200 dark:border-white/10 dark:bg-[#161615]',
+                    neumorphic
+                        ? 'rounded-[2rem] border-0 bg-[var(--neu-bg)] text-[var(--neu-ink)] neu-raised dark:bg-[var(--neu-bg)]'
+                        : 'shadow-2xl',
                     open ? 'scale-100 opacity-100' : 'scale-95 opacity-0',
                 )}
             >
                 {open ? (
                     <>
-                        <div className="flex shrink-0 items-center justify-between gap-4 border-b border-black/10 px-5 py-4 dark:border-white/10">
+                        <div
+                            className={cn(
+                                'flex shrink-0 items-center justify-between gap-4 border-b border-black/10 px-5 py-4 dark:border-white/10',
+                                neumorphic &&
+                                    'border-black/5 dark:border-white/5',
+                            )}
+                        >
                             <h2
                                 id="search-modal-title"
                                 className="text-lg font-semibold tracking-tight"
@@ -124,7 +135,11 @@ export default function SearchModal({
                                 type="button"
                                 onClick={onClose}
                                 aria-label={t('search.close')}
-                                className="rounded-sm border border-black/15 p-1.5 text-[#1b1b18] transition hover:border-[#C9A227] hover:text-[#C9A227] active:scale-95 dark:border-white/15 dark:text-[#EDEDEC]"
+                                className={cn(
+                                    'rounded-sm border border-black/15 p-1.5 text-[#1b1b18] transition hover:border-[#C9A227] hover:text-[#C9A227] active:scale-95 dark:border-white/15 dark:text-[#EDEDEC]',
+                                    neumorphic &&
+                                        'rounded-full border-0 bg-[var(--neu-bg)] p-2.5 text-[var(--neu-muted)] neu-raised-sm hover:text-[var(--neu-accent)] active:neu-inset-sm dark:border-0 dark:text-[var(--neu-muted)]',
+                                )}
                             >
                                 <svg
                                     width={16}
@@ -153,7 +168,11 @@ export default function SearchModal({
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
                                 aria-hidden="true"
-                                className="pointer-events-none absolute top-1/2 left-8 -translate-y-1/2 text-[#706f6c] dark:text-[#A1A09A]"
+                                className={cn(
+                                    'pointer-events-none absolute top-1/2 left-8 -translate-y-1/2 text-[#706f6c] dark:text-[#A1A09A]',
+                                    neumorphic &&
+                                        'text-[var(--neu-muted)] dark:text-[var(--neu-muted)]',
+                                )}
                             >
                                 <circle cx="11" cy="11" r="8" />
                                 <path d="m21 21-4.3-4.3" />
@@ -167,7 +186,11 @@ export default function SearchModal({
                                 }
                                 placeholder={t('nav.searchPlaceholder')}
                                 aria-label={t('nav.searchPlaceholder')}
-                                className="w-full rounded-sm border border-black/15 bg-[#FDFDFC] py-2.5 pr-3 pl-9 text-sm text-[#1b1b18] placeholder:text-[#706f6c] focus:border-[#C9A227] focus:ring-1 focus:ring-[#C9A227] focus:outline-none dark:border-white/15 dark:bg-[#0a0a0a] dark:text-[#EDEDEC] dark:placeholder:text-[#A1A09A]"
+                                className={cn(
+                                    'w-full rounded-sm border border-black/15 bg-[#FDFDFC] py-2.5 pr-3 pl-9 text-sm text-[#1b1b18] placeholder:text-[#706f6c] focus:border-[#C9A227] focus:ring-1 focus:ring-[#C9A227] focus:outline-none dark:border-white/15 dark:bg-[#0a0a0a] dark:text-[#EDEDEC] dark:placeholder:text-[#A1A09A]',
+                                    neumorphic &&
+                                        'rounded-full border-0 bg-[var(--neu-bg)] text-[var(--neu-ink)] neu-inset-sm placeholder:text-[var(--neu-muted)] focus:ring-[var(--neu-accent)] dark:border-0 dark:bg-[var(--neu-bg)] dark:text-[var(--neu-ink)] dark:placeholder:text-[var(--neu-muted)]',
+                                )}
                             />
                         </div>
 
@@ -181,7 +204,11 @@ export default function SearchModal({
                                                     user: member.id,
                                                 })}
                                                 onClick={onClose}
-                                                className="flex items-center gap-3 rounded-lg border border-transparent px-3 py-2.5 transition hover:border-black/10 hover:bg-black/5 active:scale-[0.98] dark:hover:border-white/10 dark:hover:bg-white/5"
+                                                className={cn(
+                                                    'flex items-center gap-3 rounded-lg border border-transparent px-3 py-2.5 transition hover:border-black/10 hover:bg-black/5 active:scale-[0.98] dark:hover:border-white/10 dark:hover:bg-white/5',
+                                                    neumorphic &&
+                                                        'rounded-full border-0 hover:border-0 hover:bg-transparent hover:neu-inset-sm dark:hover:border-0 dark:hover:bg-transparent',
+                                                )}
                                             >
                                                 {member.profile_picture_url ? (
                                                     <img
@@ -192,7 +219,13 @@ export default function SearchModal({
                                                         className="h-10 w-10 shrink-0 rounded-full object-cover"
                                                     />
                                                 ) : (
-                                                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#C9A227]/15 text-xs font-semibold text-[#C9A227]">
+                                                    <span
+                                                        className={cn(
+                                                            'flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#C9A227]/15 text-xs font-semibold text-[#C9A227]',
+                                                            neumorphic &&
+                                                                'bg-[var(--neu-bg)] text-[var(--neu-accent)] neu-inset-sm',
+                                                        )}
+                                                    >
                                                         {initials(member.name)}
                                                     </span>
                                                 )}
@@ -204,10 +237,21 @@ export default function SearchModal({
                                                         </span>
                                                         <RoleBadge
                                                             role={member.role}
+                                                            variant={
+                                                                neumorphic
+                                                                    ? 'neumorphic'
+                                                                    : 'default'
+                                                            }
                                                         />
                                                     </span>
 
-                                                    <span className="mt-0.5 block truncate text-sm text-[#706f6c] dark:text-[#A1A09A]">
+                                                    <span
+                                                        className={cn(
+                                                            'mt-0.5 block truncate text-sm text-[#706f6c] dark:text-[#A1A09A]',
+                                                            neumorphic &&
+                                                                'text-[var(--neu-muted)] dark:text-[var(--neu-muted)]',
+                                                        )}
+                                                    >
                                                         {[
                                                             member.location,
                                                             member.age
@@ -229,7 +273,13 @@ export default function SearchModal({
                                     ))}
                                 </ul>
                             ) : (
-                                <p className="rounded-lg border border-dashed border-black/15 px-4 py-6 text-center text-sm text-[#706f6c] dark:border-white/15 dark:text-[#A1A09A]">
+                                <p
+                                    className={cn(
+                                        'rounded-lg border border-dashed border-black/15 px-4 py-6 text-center text-sm text-[#706f6c] dark:border-white/15 dark:text-[#A1A09A]',
+                                        neumorphic &&
+                                            'rounded-[1.5rem] border-0 bg-[var(--neu-bg)] text-[var(--neu-muted)] neu-inset dark:bg-[var(--neu-bg)] dark:text-[var(--neu-muted)]',
+                                    )}
+                                >
                                     {t('search.noResults', { query })}
                                 </p>
                             )}

@@ -2,7 +2,7 @@ import type { Dictionary } from './id';
 
 export const en: Dictionary = {
     'common.backHome': '← Back to home page',
-    'common.copyright': '© {year} {site}. Exclusive automotive community.',
+    'common.copyright': '© {year} {site}. {description}',
     'common.cancel': 'Cancel',
     'common.save': 'Save',
     'common.saving': 'Saving...',
@@ -56,6 +56,8 @@ export const en: Dictionary = {
     'hero.title': 'Terjocore Community',
     'hero.subtitle':
         'This is the Terjo website for people from all over the world. If you believe you are a Terjo member, please click the Sign In button in the top right corner.',
+    'hero.tagline':
+        'Welcome to Terjocores! Where creativity, uniqueness, and adventures of Terjo members come together.',
     'hero.loginButton': 'Sign In',
     'hero.rules': 'RULES!!!',
     'hero.memberCount': '{count} members shown',
@@ -67,6 +69,8 @@ export const en: Dictionary = {
     'hero.nextSlide': 'Next slideshow',
     'hero.goToSlide': 'Go to slide {number}',
 
+    'footer.description': 'Exclusive digital community.',
+
     'auth.loginTitle': 'Sign in to your account',
     'auth.loginSubtitle': 'Terjocore exclusive community.',
     'auth.remember': 'Remember me',
@@ -76,6 +80,13 @@ export const en: Dictionary = {
     'auth.registerSubtitle': 'Join the exclusive community.',
     'auth.registerSubmit': 'Sign Up',
     'auth.hasAccount': 'Already have an account?',
+    'auth.overlayKicker': 'TERJOCORE // SECURE ACCESS',
+    'auth.welcomeBackTitle': 'Welcome Back, Terjo!',
+    'auth.welcomeBackCopy':
+        'Sign in to continue your exclusive access to the community.',
+    'auth.joinTitle': 'Join the Terjocore!',
+    'auth.joinCopy':
+        'Create an account and start your exclusive automotive journey.',
 
     'pending.head': 'Pending Approval',
     'pending.title': 'Account Being Reviewed',

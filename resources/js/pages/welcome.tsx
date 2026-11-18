@@ -1,9 +1,12 @@
 import { Head, Link, usePage, usePoll } from '@inertiajs/react';
 import { useState } from 'react';
 
+import type { SyntheticEvent } from 'react';
+
 import Navbar from '@/components/navbar';
 import RoleBadge from '@/components/role-badge';
 import RulesModal from '@/components/rules-modal';
+import ScratchReveal from '@/components/scratch-reveal';
 import { useLanguage } from '@/i18n/language-provider';
 import { cn } from '@/lib/utils';
 import { login } from '@/routes';
@@ -32,6 +35,15 @@ type WelcomeProps = {
     heroSubtitle: string;
 };
 
+const sparkles = [
+    'top-2 left-0 h-8 w-8 [animation-delay:0ms]',
+    'top-10 right-2 h-6 w-6 [animation-delay:300ms]',
+    'bottom-24 left-6 h-5 w-5 [animation-delay:600ms]',
+    'right-0 bottom-10 h-7 w-7 [animation-delay:900ms]',
+];
+
+const marqueeItems = Array.from({ length: 6 }, (_, index) => index);
+
 function initials(name: string): string {
     return name
         .split(' ')
@@ -39,6 +51,23 @@ function initials(name: string): string {
         .map((part) => part[0])
         .join('')
         .toUpperCase();
+}
+
+function hideBrokenImage(event: SyntheticEvent<HTMLImageElement>): void {
+    event.currentTarget.style.display = 'none';
+}
+
+function fallbackToLogo(event: SyntheticEvent<HTMLImageElement>): void {
+    const image = event.currentTarget;
+
+    if (image.dataset.fallback === 'true') {
+        image.style.display = 'none';
+
+        return;
+    }
+
+    image.dataset.fallback = 'true';
+    image.src = '/images/logo.png';
 }
 
 export default function Welcome({
@@ -67,143 +96,202 @@ export default function Welcome({
 
     return (
         <>
-            <Head title={site.name} />
+            <Head title="HOME | Terjocores" />
 
-            <div
-                className={cn(
-                    'flex bg-[#FDFDFC] text-[#1b1b18] dark:bg-[#0a0a0a] dark:text-[#EDEDEC]',
-                    isGuest
-                        ? 'h-svh flex-col overflow-hidden'
-                        : 'min-h-screen flex-col',
-                )}
-            >
-                <main className="flex flex-1 flex-col">
-                    <section
-                        className={cn(
-                            'relative flex flex-col',
-                            isGuest ? 'flex-1' : 'min-h-screen',
-                        )}
-                    >
-                        <img
-                            src="/images/slide1.jpg"
-                            alt=""
-                            aria-hidden="true"
-                            className="pointer-events-none absolute inset-0 h-full w-full object-cover"
-                        />
+            <div className="relative min-h-svh overflow-x-clip bg-[var(--neu-bg)] text-[var(--neu-ink)] transition-colors duration-300">
+                <Navbar pill members={canViewDirectory ? members : undefined} />
 
-                        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/85 via-black/55 to-black/40" />
+                <main className="relative z-10 flex flex-1 flex-col">
+                    <section className="relative flex min-h-[calc(100svh-5.5rem)] flex-col overflow-hidden">
+                        <div className="mx-auto grid w-full max-w-6xl flex-1 items-center gap-10 px-6 pt-6 pb-36 md:grid-cols-2 md:gap-8 lg:gap-14">
+                            <div className="relative flex items-center justify-center">
+                                <div
+                                    aria-hidden="true"
+                                    className="absolute h-72 w-72 rounded-full bg-[#C9A227]/10 blur-3xl md:h-96 md:w-96"
+                                />
 
-                        <Navbar
-                            overlay
-                            members={canViewDirectory ? members : undefined}
-                        />
-
-                        <div
-                            className={cn(
-                                'relative z-10 mx-auto flex w-full max-w-6xl flex-1 flex-col justify-center px-6 pt-8',
-                                isGuest ? 'pb-24' : 'pb-16',
-                            )}
-                        >
-                            {user ? (
-                                <div className="flex flex-col items-start gap-8">
-                                    <div className="max-w-3xl">
-                                        <h1 className="text-5xl font-bold tracking-tight text-white md:text-7xl">
-                                            {heroTitle}
-                                        </h1>
-                                        <p className="mt-5 max-w-2xl text-lg text-white/80">
-                                            {heroSubtitle}
-                                        </p>
-                                    </div>
-
-                                    {canViewDirectory ? (
-                                        <div className="flex flex-wrap items-center gap-4">
-                                            <button
-                                                type="button"
-                                                onClick={() =>
-                                                    setRulesOpen(true)
-                                                }
-                                                className="inline-flex animate-pulse items-center rounded-sm border-2 border-[#C9A227] bg-[#C9A227] px-6 py-3 text-base font-bold tracking-wider text-white shadow-[0_0_18px_rgba(201,162,39,0.45)] transition hover:bg-transparent hover:text-[#C9A227] hover:shadow-[0_0_18px_rgba(201,162,39,0.6)] active:scale-95"
-                                            >
-                                                {t('hero.rules')}
-                                            </button>
-
-                                            <p className="text-sm text-white/70">
-                                                {t('hero.memberCount', {
-                                                    count: members.length,
-                                                })}
-                                            </p>
-                                        </div>
-                                    ) : null}
-                                </div>
-                            ) : (
-                                <div className="flex max-w-3xl flex-col items-start gap-6">
-                                    <h1 className="text-5xl font-bold tracking-tight text-white md:text-7xl">
-                                        {t('hero.title')}
-                                    </h1>
-                                    <p className="max-w-2xl text-lg text-white/80">
-                                        {t('hero.subtitle')}
-                                    </p>
-                                    <Link
-                                        href={login.url()}
-                                        className="inline-flex items-center gap-2 rounded-sm bg-[#C9A227] px-8 py-4 text-lg font-bold tracking-wide text-white shadow-[0_0_30px_rgba(201,162,39,0.5)] transition hover:bg-[#b18f1f] active:scale-95"
+                                <div className="relative z-10 rounded-[3rem] bg-[var(--neu-bg)] p-5 neu-raised sm:p-8 lg:p-10">
+                                    <ScratchReveal
+                                        brushSize={40}
+                                        canvasClassName="scale-110 animate-float motion-reduce:animate-none"
+                                        className="relative z-10 max-w-[60vh] md:max-w-[34rem]"
                                     >
-                                        {t('hero.loginButton')}
-                                    </Link>
+                                        <img
+                                            src="/images/slide1 - Diedit.png"
+                                            alt="Terjocore mascots"
+                                            onError={hideBrokenImage}
+                                            className="relative z-10 max-h-[60vh] w-auto max-w-full scale-110 animate-float object-contain drop-shadow-[0_18px_30px_rgba(64,73,88,0.2)] transition-transform duration-300 hover:scale-[1.15] motion-reduce:transition-none md:max-h-[78vh] dark:drop-shadow-[0_22px_35px_rgba(0,0,0,0.45)]"
+                                        />
+                                    </ScratchReveal>
                                 </div>
-                            )}
+                            </div>
+
+                            <div className="relative text-center md:text-left">
+                                {sparkles.map((position) => (
+                                    <span
+                                        key={position}
+                                        aria-hidden="true"
+                                        className={cn(
+                                            'pointer-events-none absolute flex animate-pulse items-center justify-center text-lg text-[var(--neu-accent)]/40 select-none',
+                                            position,
+                                        )}
+                                    >
+                                        ✦
+                                    </span>
+                                ))}
+
+                                <p className="mb-3 text-xs font-black tracking-[0.45em] text-[var(--neu-accent)] uppercase">
+                                    Terjocore
+                                </p>
+
+                                <h1 className="text-5xl leading-[0.95] font-black tracking-tight text-[var(--neu-ink)] uppercase neu-text sm:text-6xl lg:text-7xl xl:text-8xl">
+                                    {heroTitle}
+                                </h1>
+
+                                <p className="mx-auto mt-5 max-w-xl text-lg font-medium text-[var(--neu-muted)] md:mx-0 md:text-xl">
+                                    {heroSubtitle}
+                                </p>
+
+                                <div className="mt-9 flex flex-wrap items-center justify-center gap-4 md:justify-start">
+                                    {user ? (
+                                        canViewDirectory ? (
+                                            <>
+                                                <button
+                                                    type="button"
+                                                    onClick={() =>
+                                                        setRulesOpen(true)
+                                                    }
+                                                    className="inline-flex items-center rounded-full bg-[var(--neu-bg)] px-8 py-3 text-lg font-black tracking-wider text-[var(--neu-accent)] uppercase neu-raised transition hover:-translate-y-0.5 active:translate-y-0 active:scale-95 active:neu-inset"
+                                                >
+                                                    {t('hero.rules')}
+                                                </button>
+
+                                                <p className="inline-flex items-center gap-2 rounded-full bg-[var(--neu-bg)] px-5 py-2.5 text-sm font-semibold text-[var(--neu-muted)] neu-inset">
+                                                    <span
+                                                        aria-hidden="true"
+                                                        className="h-2 w-2 rounded-full bg-[#C9A227] shadow-[0_0_8px_rgba(201,162,39,0.65)]"
+                                                    />
+                                                    {t('hero.memberCount', {
+                                                        count: members.length,
+                                                    })}
+                                                </p>
+                                            </>
+                                        ) : null
+                                    ) : (
+                                        <Link
+                                            href={login.url()}
+                                            className="group inline-flex items-center gap-3 rounded-full bg-[var(--neu-bg)] px-8 py-4 text-lg font-black tracking-[0.18em] text-[var(--neu-accent)] uppercase neu-raised transition hover:-translate-y-0.5 active:translate-y-0 active:scale-95 active:neu-inset sm:px-10 sm:text-xl"
+                                        >
+                                            {t('hero.loginButton')}
+                                            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--neu-bg)] text-[var(--neu-accent)] neu-raised-sm transition group-hover:translate-x-0.5">
+                                                <svg
+                                                    width={20}
+                                                    height={20}
+                                                    viewBox="0 0 24 24"
+                                                    fill="none"
+                                                    stroke="currentColor"
+                                                    strokeWidth={2.5}
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    aria-hidden="true"
+                                                >
+                                                    <path d="M5 12h14M13 6l6 6-6 6" />
+                                                </svg>
+                                            </span>
+                                        </Link>
+                                    )}
+                                </div>
+                            </div>
                         </div>
 
                         {isGuest ? (
-                            <div className="pointer-events-none absolute inset-x-0 bottom-6 z-10 px-6 text-center text-sm text-white/60">
+                            <p className="pointer-events-none absolute inset-x-0 bottom-16 z-10 px-6 text-center text-xs font-medium tracking-wide text-[var(--neu-muted)]">
                                 {t('common.copyright', {
                                     year: new Date().getFullYear(),
                                     site: site.name,
+                                    description: t('footer.description'),
                                 })}
-                            </div>
+                            </p>
                         ) : null}
+
+                        <div className="absolute inset-x-0 bottom-0 z-20 bg-[var(--neu-bg)] py-3 neu-inset">
+                            <div className="flex w-max animate-marquee items-center">
+                                {[0, 1].map((copy) => (
+                                    <div
+                                        key={copy}
+                                        aria-hidden={copy === 1}
+                                        className="flex shrink-0 items-center gap-6 pr-6"
+                                    >
+                                        {marqueeItems.map((item) => (
+                                            <div
+                                                key={`${copy}-${item}`}
+                                                className="flex items-center gap-6"
+                                            >
+                                                <span className="text-sm font-black tracking-[0.35em] whitespace-nowrap text-[var(--neu-muted)] uppercase">
+                                                    TERJO TEAM
+                                                </span>
+                                                <img
+                                                    src="/images/badge-logo.png"
+                                                    alt=""
+                                                    aria-hidden="true"
+                                                    onError={fallbackToLogo}
+                                                    className="h-6 w-6 object-contain opacity-80"
+                                                />
+                                            </div>
+                                        ))}
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
                     </section>
 
                     {user ? (
-                        <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-16 px-6 py-10">
-                            <section className="relative overflow-hidden rounded-2xl border border-black/10 bg-white shadow-sm dark:border-white/10 dark:bg-[#161615]">
+                        <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-16 px-6 py-12">
+                            <section className="relative overflow-hidden rounded-[2.5rem] bg-[var(--neu-bg)] p-3 neu-raised sm:p-4">
                                 {slideshows.length > 0 ? (
                                     <>
-                                        <div className="relative h-[360px] overflow-hidden md:h-[480px]">
-                                            {slideshows.map(
-                                                (slide, slideIndex) => (
-                                                    <img
-                                                        key={slide.id}
-                                                        src={slide.image_url}
-                                                        alt={t(
-                                                            'hero.goToSlide',
-                                                            {
-                                                                number:
-                                                                    slideIndex +
-                                                                    1,
-                                                            },
-                                                        )}
-                                                        aria-hidden={
-                                                            slideIndex !== index
-                                                        }
-                                                        onError={(e) => {
-                                                            e.currentTarget.src =
-                                                                '/images/slide1.jpg';
-                                                        }}
-                                                        className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ${
-                                                            slideIndex === index
-                                                                ? 'opacity-100'
-                                                                : 'opacity-0'
-                                                        }`}
-                                                    />
-                                                ),
-                                            )}
+                                        <div className="rounded-[2rem] bg-[var(--neu-bg)] p-2 neu-inset">
+                                            <div className="relative h-[360px] overflow-hidden rounded-[1.6rem] md:h-[480px]">
+                                                {slideshows.map(
+                                                    (slide, slideIndex) => (
+                                                        <img
+                                                            key={slide.id}
+                                                            src={
+                                                                slide.image_url
+                                                            }
+                                                            alt={t(
+                                                                'hero.goToSlide',
+                                                                {
+                                                                    number:
+                                                                        slideIndex +
+                                                                        1,
+                                                                },
+                                                            )}
+                                                            aria-hidden={
+                                                                slideIndex !==
+                                                                index
+                                                            }
+                                                            onError={(e) => {
+                                                                e.currentTarget.src =
+                                                                    '/images/slide1.jpg';
+                                                            }}
+                                                            className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ${
+                                                                slideIndex ===
+                                                                index
+                                                                    ? 'opacity-100'
+                                                                    : 'opacity-0'
+                                                            }`}
+                                                        />
+                                                    ),
+                                                )}
+                                            </div>
                                         </div>
 
                                         <button
                                             type="button"
                                             onClick={() => goTo(index - 1)}
                                             aria-label={t('hero.prevSlide')}
-                                            className="absolute top-1/2 left-4 -translate-y-1/2 rounded-full border border-black/10 bg-white/80 p-2 text-[#1b1b18] backdrop-blur transition hover:bg-white active:scale-95 dark:border-white/10 dark:bg-[#161615]/80 dark:text-[#EDEDEC] dark:hover:bg-[#161615]"
+                                            className="absolute top-1/2 left-5 -translate-y-1/2 rounded-full bg-[var(--neu-bg)] p-3 text-[var(--neu-muted)] neu-raised-sm transition hover:text-[var(--neu-accent)] active:scale-95 active:neu-inset-sm"
                                         >
                                             <svg
                                                 width={16}
@@ -224,7 +312,7 @@ export default function Welcome({
                                             type="button"
                                             onClick={() => goTo(index + 1)}
                                             aria-label={t('hero.nextSlide')}
-                                            className="absolute top-1/2 right-4 -translate-y-1/2 rounded-full border border-black/10 bg-white/80 p-2 text-[#1b1b18] backdrop-blur transition hover:bg-white active:scale-95 dark:border-white/10 dark:bg-[#161615]/80 dark:text-[#EDEDEC] dark:hover:bg-[#161615]"
+                                            className="absolute top-1/2 right-5 -translate-y-1/2 rounded-full bg-[var(--neu-bg)] p-3 text-[var(--neu-muted)] neu-raised-sm transition hover:text-[var(--neu-accent)] active:scale-95 active:neu-inset-sm"
                                         >
                                             <svg
                                                 width={16}
@@ -241,7 +329,7 @@ export default function Welcome({
                                             </svg>
                                         </button>
 
-                                        <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 gap-2">
+                                        <div className="absolute bottom-7 left-1/2 flex -translate-x-1/2 items-center gap-2 rounded-full bg-[var(--neu-bg)] px-3 py-2 neu-inset">
                                             {slideshows.map(
                                                 (slide, dotIndex) => (
                                                     <button
@@ -260,8 +348,8 @@ export default function Welcome({
                                                         )}
                                                         className={`h-2 rounded-full transition-all active:scale-95 ${
                                                             dotIndex === index
-                                                                ? 'w-6 bg-[#C9A227]'
-                                                                : 'w-2 bg-white/60 hover:bg-white'
+                                                                ? 'w-7 bg-[var(--neu-accent)]'
+                                                                : 'w-2 bg-[var(--neu-muted)]/30 hover:bg-[var(--neu-muted)]/60'
                                                         }`}
                                                     />
                                                 ),
@@ -269,25 +357,50 @@ export default function Welcome({
                                         </div>
                                     </>
                                 ) : (
-                                    <div className="flex h-[360px] items-center justify-center bg-gradient-to-br from-[#C9A227]/20 to-[#C9A227]/5 text-sm text-[#706f6c] md:h-[480px] dark:text-[#A1A09A]">
-                                        {t('hero.slideshowEmpty')}
+                                    <div className="flex h-[240px] flex-col items-center justify-center gap-4 rounded-[2rem] bg-[var(--neu-bg)] text-sm text-[var(--neu-muted)] neu-inset md:h-[320px]">
+                                        <span
+                                            aria-hidden="true"
+                                            className="flex h-12 w-12 items-center justify-center rounded-full bg-[var(--neu-bg)] text-[var(--neu-accent)] neu-raised-sm"
+                                        >
+                                            <svg
+                                                width={22}
+                                                height={22}
+                                                viewBox="0 0 24 24"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                strokeWidth={1.8}
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                            >
+                                                <rect
+                                                    width={18}
+                                                    height={18}
+                                                    x={3}
+                                                    y={3}
+                                                    rx={3}
+                                                />
+                                                <circle cx={9} cy={9} r={2} />
+                                                <path d="m21 15-4.8-4.8a2 2 0 0 0-2.8 0L5 19" />
+                                            </svg>
+                                        </span>
+                                        <p>{t('hero.slideshowEmpty')}</p>
                                     </div>
                                 )}
                             </section>
 
                             {canViewDirectory ? (
                                 <section>
-                                    <div className="mb-6 flex items-end justify-between">
-                                        <h2 className="text-2xl font-semibold tracking-tight">
+                                    <div className="mb-8 flex flex-wrap items-end justify-between gap-3">
+                                        <h2 className="text-2xl font-semibold tracking-tight text-[var(--neu-ink)]">
                                             {t('hero.section')}
                                         </h2>
-                                        <p className="text-sm text-[#706f6c] dark:text-[#A1A09A]">
+                                        <p className="text-sm text-[var(--neu-muted)]">
                                             {t('hero.directory')}
                                         </p>
                                     </div>
 
                                     {members.length > 0 ? (
-                                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                                        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                                             {members.map((member) => (
                                                 <Link
                                                     key={member.id}
@@ -296,21 +409,23 @@ export default function Welcome({
                                                             user: member.id,
                                                         },
                                                     )}
-                                                    className="flex flex-col gap-3 rounded-xl border border-black/10 bg-white p-5 shadow-sm transition group-hover:border-[#C9A227] hover:border-[#C9A227] active:scale-[0.99] dark:border-white/10 dark:bg-[#161615]"
+                                                    className="flex flex-col gap-3 rounded-[2rem] bg-[var(--neu-bg)] p-5 neu-raised transition hover:-translate-y-1 hover:neu-raised-lg active:translate-y-0 active:scale-[0.98] active:neu-inset"
                                                 >
                                                     <div className="flex items-center gap-3">
                                                         {member.profile_picture_url ? (
-                                                            <img
-                                                                src={
-                                                                    member.profile_picture_url
-                                                                }
-                                                                alt={
-                                                                    member.name
-                                                                }
-                                                                className="h-12 w-12 rounded-full object-cover"
-                                                            />
+                                                            <div className="shrink-0 rounded-full bg-[var(--neu-bg)] p-1 neu-raised-sm">
+                                                                <img
+                                                                    src={
+                                                                        member.profile_picture_url
+                                                                    }
+                                                                    alt={
+                                                                        member.name
+                                                                    }
+                                                                    className="h-12 w-12 rounded-full object-cover"
+                                                                />
+                                                            </div>
                                                         ) : (
-                                                            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#C9A227]/15 font-semibold text-[#C9A227]">
+                                                            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[var(--neu-bg)] font-semibold text-[var(--neu-accent)] neu-inset-sm">
                                                                 {initials(
                                                                     member.name,
                                                                 )}
@@ -318,19 +433,20 @@ export default function Welcome({
                                                         )}
 
                                                         <div className="min-w-0">
-                                                            <h3 className="truncate font-medium">
+                                                            <h3 className="truncate font-medium text-[var(--neu-ink)]">
                                                                 {member.name}
                                                             </h3>
                                                             <RoleBadge
                                                                 role={
                                                                     member.role
                                                                 }
+                                                                variant="neumorphic"
                                                             />
                                                         </div>
                                                     </div>
 
                                                     {member.location && (
-                                                        <p className="text-sm text-[#706f6c] dark:text-[#A1A09A]">
+                                                        <p className="text-sm text-[var(--neu-muted)]">
                                                             {member.location}
                                                             {member.age
                                                                 ? ` · ${t(
@@ -344,7 +460,7 @@ export default function Welcome({
                                                     )}
 
                                                     {member.bio && (
-                                                        <p className="line-clamp-3 text-sm text-[#1b1b18] dark:text-[#EDEDEC]">
+                                                        <p className="line-clamp-3 text-sm text-[var(--neu-ink)] opacity-80">
                                                             {member.bio}
                                                         </p>
                                                     )}
@@ -352,7 +468,7 @@ export default function Welcome({
                                             ))}
                                         </div>
                                     ) : (
-                                        <p className="rounded-xl border border-black/10 bg-white px-6 py-10 text-center text-sm text-[#706f6c] dark:border-white/10 dark:bg-[#161615] dark:text-[#A1A09A]">
+                                        <p className="rounded-[2rem] bg-[var(--neu-bg)] px-6 py-10 text-center text-sm text-[var(--neu-muted)] neu-inset">
                                             {t('hero.noResults')}
                                         </p>
                                     )}
@@ -363,16 +479,21 @@ export default function Welcome({
                 </main>
 
                 {user ? (
-                    <footer className="border-t border-black/10 px-6 py-6 text-center text-sm text-[#706f6c] dark:border-white/10 dark:text-[#A1A09A]">
+                    <footer className="relative z-10 border-t border-black/5 px-6 py-8 text-center text-sm text-[var(--neu-muted)] dark:border-white/5">
                         {t('common.copyright', {
                             year: new Date().getFullYear(),
                             site: site.name,
+                            description: t('footer.description'),
                         })}
                     </footer>
                 ) : null}
             </div>
 
-            <RulesModal open={rulesOpen} onClose={() => setRulesOpen(false)} />
+            <RulesModal
+                open={rulesOpen}
+                onClose={() => setRulesOpen(false)}
+                variant="neumorphic"
+            />
         </>
     );
 }

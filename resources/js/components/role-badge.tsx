@@ -9,6 +9,13 @@ const ROLE_BADGE_CLASSES: Record<Role, string> = {
     slave: 'bg-red-950/40 text-red-400 border border-red-900/50',
 };
 
+const NEUMORPHIC_ROLE_BADGE_CLASSES: Record<Role, string> = {
+    owner: 'bg-[var(--neu-bg)] text-amber-600 dark:text-amber-400',
+    admin: 'bg-[var(--neu-bg)] text-blue-600 dark:text-blue-400',
+    member: 'bg-[var(--neu-bg)] text-[var(--neu-muted)]',
+    slave: 'bg-[var(--neu-bg)] text-red-600 dark:text-red-400',
+};
+
 const ROLE_I18N_KEYS: Record<Role, string> = {
     owner: 'role.owner',
     admin: 'role.admin',
@@ -16,19 +23,31 @@ const ROLE_I18N_KEYS: Record<Role, string> = {
     slave: 'role.slave',
 };
 
+type RoleBadgeVariant = 'default' | 'neumorphic';
+
 type RoleBadgeProps = {
     role: Role;
     className?: string;
+    variant?: RoleBadgeVariant;
 };
 
-export default function RoleBadge({ role, className }: RoleBadgeProps) {
+export default function RoleBadge({
+    role,
+    className,
+    variant = 'neumorphic',
+}: RoleBadgeProps) {
     const { t } = useLanguage();
 
     return (
         <span
             className={cn(
                 'inline-flex shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium',
-                ROLE_BADGE_CLASSES[role],
+                variant === 'neumorphic'
+                    ? cn(
+                          NEUMORPHIC_ROLE_BADGE_CLASSES[role],
+                          'font-semibold neu-inset-sm',
+                      )
+                    : ROLE_BADGE_CLASSES[role],
                 className,
             )}
         >

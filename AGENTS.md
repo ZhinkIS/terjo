@@ -73,7 +73,7 @@ This project has domain-specific skills available in `**/skills/**`. You MUST ac
 ## Project Rules
 
 - This project contains committed, area-grouped rules in `.ai/rules` when that directory exists (settled decisions, non-obvious traps, standing constraints). Framework and package guidelines that only apply to specific paths (testing, frontend, components) also live there, under `.ai/rules/boost` — this is not just recorded decisions, it is load-bearing guidance you have not seen inline. Before you enter plan mode or create/edit any file, you MUST first: open @.ai/rules/index.md (it maps file globs to rule files), read every rule file whose globs cover the path(s) in scope, and run `grep -rin 'keyword' .ai/rules` to catch what a path match alone misses. Do not write code until you have read and are following every matching rule. If `.ai/rules` does not exist, continue without it.
-- Record durable rules with `record-rule` so the next agent or teammate inherits them instead of working them out again. Pass a `glob` (e.g. `app/Http/Controllers/**`), a short `title`, and a few-line `note`. Always use `record-rule`, never your native memory or notes tool — native memory is personal and session-scoped; only `.ai/rules` is shared with the team and persists in the repo.
+- Record durable rules with `record-rule` so the next agent or teammate inherits them instead of working it out again. Pass a `glob` (e.g. `app/Http/Controllers/**`), a short `title`, and a few-line `note`. Always use `record-rule`, never your native memory or notes tool — native memory is personal and session-scoped; only `.ai/rules` is shared with the team and persists in the repo.
 
 ## Artisan
 
@@ -189,63 +189,64 @@ Use Wayfinder to generate TypeScript functions for Laravel routes. Import from `
 
 # Project
 
-Laravel 13 (PHP 8.3) + Inertia v3 + React 19 + TypeScript (strict) + Tailwind v4 + Vite 8 + Pest 4. This is the **Terjocore community site** (exclusive automotive community); UI copy is Indonesian. The `boost.json`-managed guidelines above are rewritten in place by `composer update` — keep repo-specific notes in this section, not inside that block.
+**Terjocore** — exclusive automotive community. Laravel 13 (PHP 8.3) + Inertia v3 + React 19 + TypeScript strict + Tailwind v4 + Vite 8 + Pest 4. UI copy and `APP_LOCALE` are Indonesian (`id`).
 
-## Local DB is MySQL (tests use SQLite)
-
-- Dev `.env` and `.env.example` use **MySQL** (Laragon, db `terjocore`) — NOT SQLite. `database/database.sqlite` is a starter-kit leftover; ignore it.
-- Tests run against in-memory SQLite (`phpunit.xml`), so avoid MySQL-only SQL that must pass CI.
-
-## Membership & access control (core domain)
-
-- `users.role` enum `owner|admin|member`; `users.status` enum `pending|approved|rejected` (DB default is `pending` — every user creator must set it).
-- Registration always creates `role=member, status=pending`, then redirects to `pending`. `EnsureApprovedUser` (appended to the web group in `bootstrap/app.php`) quarantines pending users to the `pending` and `logout` routes only.
-- **Login redirects back to the home page** — `AuthenticatedSessionController::store` returns `redirect()->route('home')`, never `/dashboard`. The `guest` middleware alias is `App\Http\Middleware\RedirectIfAuthenticated` (subclasses the framework one) so already-authenticated users hitting `/login` also bounce to `home`, not `dashboard`. Pending users still land on `/pending` because `EnsureApprovedUser` intercepts `/`.
-- The home page member directory is shown ONLY to authenticated, approved users; `HomeController` doesn't even send the `members` prop to guests.
-- Admin flows are behind the `role:admin` middleware alias + `UserPolicy`: admins manage members, the owner is absolute, nobody deletes themselves. Approve = set `approved` (never a role change); reject = delete the account.
-- The **Rules popup** is `resources/js/components/rules-modal.tsx` — a hardcoded `RULES` list ("Terjo Legalis Pactum", numbered 1-18 with separators) opened by the `RULES!!!` button on the welcome page. The button renders ONLY for authenticated, approved users (guests never see it). Rules are NOT DB-driven yet; the register page does not show them.
-
-## Current feature state
-
-- **Done:** auth, pending-approval flow, member directory + detail (`members.show`), admin slideshows/settings/member management, hero carousel, rules modal, mobile navbar (theme toggle outside hamburger, links under the X), main Navbar + `< Kembali ke halaman utama` on auth pages.
-- **Welcome hero is a full-bleed dark section** (streaming-style): bg `/images/slide1.jpg` under a gradient overlay, always dark in both themes; content is left-aligned and splits on `auth.user`. The guest landing is a single fixed 100vh screen (`h-svh` + `overflow-hidden`, no page scroll): guests see huge bold "Komunitas Terjocore" + fixed subtitle + a prominent "Login / Masuk" button, and the footer text is pinned inside the hero bottom — no search/slideshow/RULES/directory. Members get the settings `heroTitle`/`heroSubtitle` + RULES button + member count in the hero, with slideshow + directory below (scrollable, standalone footer). `HomeController` still sends `slideshows`/`heroTitle`/`heroSubtitle` to everyone; React hides them for guests.
-- The decorative hero `<img>` and gradient overlay are `pointer-events-none`; the Navbar overlay is `z-20`. The hero bg was `slide.jpg` once by mistake — the file only exists as `slide1.jpg`/`slide2.jpg` (see seeded-photo rule).
-- Guest navbar right side = `ThemeToggle` + `AccountDropdown` (`resources/js/components/account-dropdown.tsx`, English labels: Account / Sign In / Sign Up / Language; Sign In→login, Sign Up→register; language stored under the same `preferred-language` key as members). Search bar never renders for guests.
-- `Navbar`, `AccountMenu`, `AccountDropdown`, `ThemeToggle`, and `SearchInput` accept an optional `overlay` prop (absolute over the dark hero, light text/borders, translucent search input); only the welcome page passes it — keep the default styling elsewhere.
-- Slideshows are **position-ordered** (`slideshows.position`, default 0; engine reorders via `PUT admin.slideshows.reorder`). They're managed inline in the Site Settings tab via `resources/js/components/slideshow-manager.tsx` (upload / active toggle / delete / up-down reorder); the standalone `admin/slideshows` pages still exist.
-- **Chat is modeled but not built:** `conversations`, `conversation_user`, `messages` tables + models, factories, `ChatSeeder` (global chat, `messages.body` is `encrypted`), and `ChatTest` exist, but there are **no chat routes or UI yet** — the likely next feature.
-
-## Load-bearing `.ai/rules`
-
-Before creating/editing any file, read the rule files matched in `.ai/rules/index.md` and grep `keyword` in `.ai/rules`. They hold traps not inferable from filenames, e.g.: Wayfinder needs unique route names per verb (`login` vs `login.store`); the public `MemberController` must be imported `as PublicMemberController` in `routes/web.php`; never delete seeded `/images/...` paths (AvatarService strips only `/storage/`); no eager `import.meta.glob` resolver in `app.tsx` (breaks per-page manifest entries).
-
-## Generated code (never hand-edit)
-
-- `resources/js/actions`, `resources/js/routes`, and `resources/js/wayfinder` are **Wayfinder output**, gitignored, and excluded from ESLint. Import route helpers from `@/routes` and controller actions from `@/actions` in TSX/TS.
-- The `@laravel/vite-plugin-wayfinder` plugin (`formVariants: true`) regenerates them whenever Vite runs. After adding/changing routes, regenerate before typechecking via `php artisan wayfinder:generate`.
+## Ground rules
+- Before planning or editing, read `.ai/rules/index.md` and every rule file whose globs match the paths in scope; `grep -rin 'keyword' .ai/rules` for what path matching misses. These hold non-obvious traps (Wayfinder, caching, images, i18n).
+- Record durable decisions with `laravel-boost.record-rule` — not native memory. Skills live in `.agents/skills/`; Boost MCP is configured in `opencode.json`.
+- The `<laravel-boost-guidelines>` block above is maintained by `boost:update` (composer `post-update-cmd`); don't hand-edit it. Put project guidance below.
 
 ## Commands
+- Package manager: **npm** (`package-lock.json`); ignore `pnpm-workspace.yaml`. `.npmrc` sets `ignore-scripts=true`.
+- Setup: `composer setup` (install, copy `.env` only if missing, **always regenerate `APP_KEY`**, `migrate --force`, `npm install`, `npm run build`). Never run it in an existing checkout against the shared DB: rotating `APP_KEY` orphans encrypted `Message.body` and invalidates sessions, and `migrate --force` targets the remote DB in local `.env`. It does **not** seed; `php artisan migrate --seed` creates the 34-user fixture but is not idempotent — see the DB warning below first.
+- Dev: `composer run dev` (serve + queue listener + Vite) or `npm run dev`.
+- Single test: `php artisan test --compact --filter=TestName` (or pass a path). Feature tests auto-use `RefreshDatabase` via `tests/Pest.php`; Unit tests do not. Backend gate: `composer test` (clears config, then Pint check → PHPStan → Pest). Local full gate: `npm run lint:check && npm run format:check && npm run types:check && composer test`; autofix frontend with `npm run lint` / `npm run format`.
+- `composer ci:check` is broken as written: its bare `types:check` entry is run as a shell command, not the npm script, so it fails after the frontend checks. Use the explicit chain above; CI also has a DB problem (see Deployment).
+- Feature tests assert Inertia via `assertInertia(fn (Assert $page) => ...)`, not `assertViewHas`. Build users with factory states (`asOwner()`, `asAdmin()`, `asMember()`, `asSlave()`, `asPending()`, `asRejected()`); the default is `member` + `approved`.
+- No JS test runner (`npm test` does not exist) and no Pest browser plugin: verify frontend with `npm run lint:check`, `npm run format:check`, `npm run types:check`; use HTTP feature tests (`$this->get()`/`post`), not `visit()`.
+- After editing PHP: `vendor/bin/pint --dirty --format agent` (full tree: `composer lint` / `composer lint:check`). PHPStan (level 7) analyses `app/`, `bootstrap/app.php`, `config/`, `database/`, `routes/` — not `tests/`.
+- No README; `composer.json` scripts and `package.json` scripts are the source of truth.
 
-- JS package manager is **npm** (`package-lock.json`; `composer setup`/scripts call `npm`). The `pnpm-workspace.yaml` at the root is a leftover starter-kit artifact — ignore it.
-- `.npmrc` sets `ignore-scripts=true`, so npm lifecycle scripts never run.
-- Dev servers: `npm run dev` (Vite HMR only) or `composer run dev` (concurrently runs `php artisan serve` + `queue:listen` + Vite).
-- Per-file verification: `npm run types:check` (tsc), `npm run lint`/`lint:check` (ESLint), `npm run format`/`format:check` (Prettier), `composer lint`/`lint:check` (Pint), `composer types:check` (PHPStan), `php artisan test --compact --filter=...`.
-- `composer ci:check` is the full gate and mirrors `.github/workflows/tests.yml` (PHP 8.3, Node 22, `composer setup` then `composer ci:check`; runs on PRs and push to `main`).
+## Architecture
+- All application routes are in `routes/web.php` (no API routes). Controllers are thin: validation usually lives in `app/Http/Requests`, authorization uses `Gate`/policies, then `Inertia::render('page', props)`; shared props come from `HandleInertiaRequests::share()`.
+- `HomeController` = landing page; `DashboardController` = one role-aware dashboard with profile/member-management/settings tabs, refreshed in place by `usePoll(5000)`; `PendingController` = quarantine page whose `pending.status` JSON endpoint is polled. Chat models/tables/tests exist but have **no routes or UI**.
+- Two `MemberController`s: the public `App\Http\Controllers\MemberController` must be imported as `PublicMemberController` in `routes/web.php`. Avatar uploads/deletes go through `App\Services\AvatarService`, never ad-hoc `Storage` calls.
+- Wayfinder groups routes by **name**, so each verb needs a unique name (`login` / `login.store`); duplicate names break generated `resources/js/routes/index.ts` and the build.
 
-## Frontend conventions
+## Env & DB
+- **Local `.env` uses remote Supabase Postgres** (`DB_CONNECTION=pgsql`, pooler host); `.env.example` still says MySQL `terjocore`. Treat dev data as shared — never run `migrate:fresh`/`db:wipe`/`--seed` against dev without explicit approval. `DB::prohibitDestructiveCommands` only blocks destructive commands in production, so local `APP_ENV=local` does not protect the remote DB.
+- Tests are safe: `phpunit.xml` forces SQLite `:memory:` (array cache/session), so keep SQL portable. The `slave` enum migration branches on the driver (`pgsql` vs enum `change()`), a good example to follow.
+- Uploads are local-only: code writes to the explicit `public` disk (`storage/app/public`, symlinked at `public/storage`); `FILESYSTEM_DISK=local` only points at `storage/app/private` and is not used for media. `public/storage` is gitignored — run `php artisan storage:link` after cloning or uploaded media 404s. `Storage::url()` is built from `APP_URL` (local `.env`: `http://192.168.1.6:8000`). Cache/session/queue are database-backed in both `.env` files.
 
-- Tailwind v4 is CSS-first: there is **no `tailwind.config.js`**. Theme/fonts are declared with `@theme` in `resources/css/app.css`. Instrument Sans is self-hosted via the Vite `bunny()` font plugin, not a font file.
-- ESLint enforces: `consistent-type-imports` (separate `import type { … }`), alphabetical `import/order`, 1TBS braces, and blank lines around control statements. `npm run lint` autofixes; `lint:check` only reports.
-- Prettier: 4-space indent, single quotes, `printWidth: 80`, `prettier-plugin-tailwindcss` aware of `clsx`/`cn`/`cva` calls. Use the `cn()` helper from `resources/js/lib/utils.ts` for class merging.
-- React Compiler is enabled via `babel-plugin-react-compiler` in `vite.config.ts` — write memoization-free render code.
-- SSR is on; `resources/js/components/theme-provider.tsx` must guard every `window`/`document`/`localStorage`/`matchMedia` access (`typeof window === 'undefined'` or `useEffect`) so it never crashes on the Node server ("window is not defined").
-- Shared Inertia props are declared in `HandleInertiaRequests::share()` **and** typed as `sharedPageProps` in `resources/js/types/global.d.ts`. Keep both in sync; `sidebarOpen` in the TS type is an orphaned leftover with no backend counterpart.
-- Static pages without controller logic use `Route::inertia()` (see `routes/web.php`); pages live in `resources/js/pages`.
+## Access model
+- `UserRole` = `owner|admin|member|slave`, ranked owner 4 > admin 3 > member 2 > slave 1. `role:` middleware compares rank, so `role:admin` also admits owners. `users.status` = `pending|approved|rejected` (DB default `pending`); keep the UI labels in `UserStatus::label()` in sync.
+- Registration always creates `member` + `pending` and redirects to `pending`. `EnsureApprovedUser` (appended to the `web` group) allowlists only routes named `pending`, `pending.status`, and `logout`; every other pending request redirects to `pending`.
+- `guest` alias is the app's `RedirectIfAuthenticated`, which sends authenticated users to `home`; login POST also redirects to `home`, not `/dashboard`.
+- `UserPolicy`: owner updates any non-owner; admin updates only `member`/`slave`; anyone may update self. Nobody deletes self; admin cannot touch owner/admin. Approve changes status only; reject deletes the account. Role changes accept `admin|member|slave` — nobody can become owner.
+- Guests get neither `slideshows` nor `members`; approved members get both on `home` (pending users are redirected before it renders). `members.show` requires auth, 404s when the target user is not approved, and redirects a pending viewer to `pending`.
+- Seeded logins: `owner@terjocore.test`, `admin1..admin3@terjocore.test`, `member1..member30@terjocore.test`; password `password`.
 
-## Backend / testing
+## Caching & media (easy to break)
+- `config/cache.php` sets `serializable_classes => false`: never cache objects/models — arrays/scalars only. `Setting::current()` caches attributes + a per-request container memo; call `Setting::flushCache()` after settings writes.
+- User-derived cache keys embed `User::DIRECTORY_VERSION_KEY`, bumped by `User::booted()` on save/delete. Slideshow writes must forget **both** `slideshows.all` and `home.slideshows`. No cache tags (array/database stores don't support them).
+- Seeded media paths start with `/images/...` and must never be deleted. Uploaded media deletion differs: avatar URLs are `/storage/avatars/...` (strip `/storage/` first), while slideshow `image_path` and settings `logo_path` are relative public-disk paths. `slide1.jpg`/`slide2.jpg` are the only seeded slideshow images — do not regenerate or replace them. `public/images/avatars/*.svg` are generated by `UserSeeder` and committed.
+- `HomeController` silently drops slideshows whose file is missing on the public disk; tests that `Storage::fake('public')` must also `put()` each slideshow file (factory defaults point at `/images/slide1.jpg`, absent from the fake disk).
+- `UserSeeder` creates exactly 34 approved users (1 owner, 3 admins, 30 members); `SeederTest` asserts that plus 2 slideshows. `ChatSeeder` creates a global conversation with 3 welcome messages and is idempotent; `Message.body` is encrypted at rest. `UserSeeder`/`SlideshowSeeder` are **not idempotent** (fixed unique emails; unconditional inserts), so don't re-seed a populated DB.
+- Most models use Laravel 13 attributes (`#[Fillable([...])]` / `#[Hidden([...])]`); `Setting` is the exception and still uses `$fillable`.
 
-- PHPStan runs at **level 7** (`phpstan.neon`) — full return types and type hints are mandatory.
-- Pest feature tests already apply `RefreshDatabase` via `tests/Pest.php`; tests run against in-memory SQLite (`phpunit.xml`). Create tests with `php artisan make:test --pest`.
-- Seeded data is load-bearing: `UserSeeder` seeds exactly 34 approved users (owner + 3 admins + 30 members); `SeederTest` asserts the count. Follow the existing model style — Laravel 13 attributes `#[Fillable]`/`#[Hidden]`, `Message.body` encrypted.
-- `SlideshowSeeder` only creates rows referencing `/images/slide1.jpg` + `/images/slide2.jpg` — those prepared photos in `public/images` must NOT be regenerated/replaced (the GD gradient generator was removed; keep it that way).
+## Frontend
+- `resources/views/app.blade.php` loads each page with `@vite([... "resources/js/pages/{$page['component']}.tsx"])`, so a page rendered as `auth/login` must live at `resources/js/pages/auth/login.tsx` and default-export the component. `config/inertia.php`'s `ensure_pages_exist` makes tests fail when that file is missing.
+- `createInertiaApp` must keep `withApp` (providers) and **no** `resolve`/eager `import.meta.glob` — that collapses per-page chunks into `app.js` and causes manifest 500s.
+- Wayfinder output in `resources/js/actions|routes|wayfinder` is committed but ignored by ESLint/Prettier; never hand-edit it and import helpers from `@/routes`/`@/actions` instead of hardcoding URLs. `@/*` maps to `resources/js/*`; root routes are named exports from `@/routes`, while per-name groups default-export (`store` from `@/routes/login`). On `welcome.tsx` import `memberRoutes` from `@/routes/members` so the `members` prop doesn't shadow it.
+- Regenerate Wayfinder with `php artisan wayfinder:generate --with-form` after route changes (the Vite plugin does it in dev; `vite.config.ts` skips it when `VERCEL` is set, so `composer vercel` regenerates first). `public/build` is committed too; run `npm run build` before finishing (or `npm run dev` while iterating) so the tracked manifest/assets match — a stale manifest causes `ViteException`.
+- React Compiler is enabled: write memoization-free code. `react-hooks/set-state-in-effect` is enforced, so toggle always-mounted markup with classes instead of state-in-effect animations.
+- Every button/button-styled link needs `active:scale-95` (`active:scale-[0.98]` for full-width rows) and keeps the existing `transition` class for color transitions.
+- i18n: use `useLanguage()`/`t()`; keys are typed by `Dictionary` from `resources/js/i18n/locales/id.ts`, so add each key to both `id.ts` and `en.ts`. Server-side validation/auth strings live in `lang/id` and `lang/en`. Locale persists in `localStorage['preferred-language']`; `LanguageProvider` must keep `useSyncExternalStore` with server snapshot `'id'`.
+- SSR is opt-in via `INERTIA_SSR=true` (currently `false`); `ThemeProvider` must still guard `window`/`matchMedia`. Shared props must stay in sync between `HandleInertiaRequests::share()` and `sharedPageProps` in `resources/js/types/global.d.ts`.
+- Tailwind v4 CSS-first: theme tokens in `resources/css/app.css` (no `tailwind.config.js`); fonts via Vite `bunny()`. Use `cn()` from `resources/js/lib/utils.ts`. ESLint enforces type imports, alphabetical import order, 1TBS, `curly`, and blank lines around control statements; Prettier uses 4 spaces/single quotes/80 cols. `npm run format` only touches `resources/`.
+- Navbar/search/modal/welcome/dashboard layout specifics are in `.ai/rules/components.md` and `.ai/rules/pages.md` — read them before restyling.
 
+## Deployment
+- Vercel: `api/index.php` requires `public/index.php`; `vercel.json` pins runtime `vercel-php@0.7.3` and routes `/build`, `/images`, `/storage` to `public/`. `bootstrap/app.php` relocates storage and bootstrap to `/tmp` when `VERCEL` is set; treat that as ephemeral (uploads do not survive deploys/instances).
+- Build/deploy with `composer vercel` (wayfinder → `npm ci` → build), because the Vite Wayfinder plugin is disabled during Vercel builds.
+- CI (`.github/workflows/tests.yml`): PRs + pushes to `main`, PHP 8.3 / Node 22, runs `composer setup` then `composer ci:check`. As configured it can't reach the tests: `composer setup` migrates `.env.example` (MySQL `terjocore`) with no DB service, and `ci:check` hits the bare `types:check` bug. Don't treat red CI as proof your change broke something.
